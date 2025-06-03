@@ -14,7 +14,7 @@ class CastorAnalytics(QtWidgets.QMainWindow):
         self.init_ui()
 
     def init_ui(self):
-        self.setWindowTitle("castoranalytics")
+        self.setWindowTitle("Castor Analytics")
         self.show()
 
 
