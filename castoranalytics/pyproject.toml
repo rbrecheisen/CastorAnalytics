@@ -9,7 +9,7 @@ author = "Ralph Brecheisen"
 author_email = "ralph.brecheisen@gmail.com"
 
 [tool.briefcase.app.castoranalytics]
-formal_name = "Castor Analytics"
+formal_name = "CastorAnalytics"
 description = "Desktop application to view summary statistics and advanced visualizations of your Castor EDC studies"
 long_description = """More details about the app should go here.
 """
