@@ -3,3 +3,5 @@ tomli
 tomli-w
 nuitka
 pyinstaller
+
+PySide6-Essentials

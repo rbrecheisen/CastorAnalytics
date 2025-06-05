@@ -7,15 +7,7 @@ import importlib.metadata
 
 from PySide6 import QtWidgets
 
-from castoranalytics.ui.uibuilder import UiBuilder
-
-
-class CastorAnalytics(QtWidgets.QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self._ui_builder = UiBuilder(self, title='Castor Analytics')
-        self._ui_builder.build()
-        self.show()
+from castoranalytics.ui.mainwindow import MainWindow
 
 
 def main():
@@ -36,5 +28,5 @@ def main():
     QtWidgets.QApplication.setApplicationName(metadata["Formal-Name"])
 
     app = QtWidgets.QApplication(sys.argv)
-    main_window = CastorAnalytics()
+    main_window = MainWindow()
     sys.exit(app.exec())
