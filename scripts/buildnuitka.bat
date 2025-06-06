@@ -2,9 +2,9 @@
 
 setlocal
 
-cd castoranalytics\src
+rmdir /s /q castoranalytics\build-nuitka
 
-del /q "..\build-nuitka"
+cd castoranalytics\src
 
 nuitka ^
     --standalone ^
@@ -14,6 +14,6 @@ nuitka ^
     --windows-console-mode=disable ^
     --output-dir=..\build-nuitka ^
     --output-filename=CastorAnalytics ^
-    castoranalytics\__main__.py
+    app.py
 
 endlocal

@@ -22,9 +22,9 @@ def run_tests():
             "-vv",
             # Disable color
             "--color=no",
+            "-s",
             # Overwrite the cache directory to somewhere writable
             "-o",
-            "-s",
             f"cache_dir={tempfile.gettempdir()}/.pytest_cache",
         ] + args
     )
