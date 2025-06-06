@@ -1,7 +1,9 @@
-briefcase
-tomli
-tomli-w
+briefcase==0.3.23
+tomli==2.2.1
+tomli-w==1.2.0
 
-pytest
+pytest==8.4.0
 
-PySide6_Essentials
+PySide6_Essentials==6.9.1
+oauthlib==3.2.2
+requests-oauthlib==2.0.0

@@ -5,5 +5,5 @@ class BaseCommand:
     def get_args(self):
         return self._args
 
-    def execute(self):
+    def execute(self, state=None):
         raise NotImplementedError('Not implemented')

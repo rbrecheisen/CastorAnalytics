@@ -1,10 +1,10 @@
-from castoranalytics.core.command.api.getapisessioncommand import GetApiSessionCommand
+from castoranalytics.core.command.api.getapisessioncommand import GetApiClientCommand
 
 
 COMMAND_REGISTRY = {
 
     'GetApiSession': {
-        'class': GetApiSessionCommand,
+        'class': GetApiClientCommand,
         'args': [
             {'name': 'token_url'},
             {'name': 'api_base_url'},
