@@ -20,10 +20,16 @@ test_sources = [
     "tests",
 ]
 requires = [
-    "PySide6_Essentials==6.9.0",
+    "pyside6==6.9.1",
+    "sqlalchemy==2.0.41",
+    "oauthlib==3.2.2",
+    "requests-oauthlib==2.0.0",
 ]
 test_requires = [
     "pytest",
+]
+resources = [
+    "src/castoranalytics/resources",
 ]
 
 [tool.briefcase.app.castoranalytics.macOS]

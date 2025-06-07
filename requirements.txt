@@ -1,9 +1,12 @@
+# Project tools
 briefcase==0.3.23
 tomli==2.2.1
 tomli-w==1.2.0
 
+# Test
 pytest==8.4.0
 
+# Application
 pyside6==6.9.1
 sqlalchemy==2.0.41
 oauthlib==3.2.2
