@@ -32,7 +32,7 @@ if /I "%~1"=="--briefcase" (
         --output-filename=CastorAnalytics ^
         app.py
 ) else (
-    echo "Unknown option"
+    echo "Usage: build.bat [--briefcase|--nuitka]"
 )
 
 cd %START_DIR%

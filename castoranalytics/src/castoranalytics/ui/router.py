@@ -1,13 +1,18 @@
 from PySide6.QtWidgets import QStackedWidget
 
+from castoranalytics.ui.crumbs import Crumbs
+
 
 class Router(QStackedWidget):
-    def __init__(self, crumbs):
+    def __init__(self):
         super(Router, self).__init__()
-        self._crumbs = crumbs
+        self._crumbs = Crumbs()
         self._pages = {}
         self._prev_path = None
         self._curr_path = None
+
+    def crumbs(self):
+        return self._crumbs
 
     def add_page(self, page, path):
         if path not in self._pages.keys():

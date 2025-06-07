@@ -22,9 +22,9 @@ from PySide6.QtGui import (
 from PySide6.QtCore import Qt
 
 from castoranalytics.ui.router import Router
-from castoranalytics.ui.crumbs import Crumbs
 from castoranalytics.ui.pages.homepage import HomePage
 from castoranalytics.ui.pages.settingspage import SettingsPage
+from castoranalytics.core.logging import LogManager
 
 CASTOR_ANALYTICS_WINDOW_TITLE = 'Castor Analytics'
 CASTOR_ANALYTICS_WINDOW_W = 1024
@@ -34,6 +34,7 @@ CASTOR_ANALYTICS_RESOURCES_IMAGES_DIR = 'castoranalytics.resources.images'
 CASTOR_ANALYTICS_RESOURCES_BACKGROUND_IMAGE = 'home.png'
 CASTOR_ANALYTICS_RESOURCES_BACKGROUND_IMAGE_OPACITY = 0.5
 
+LOG = LogManager()
 
 
 class MainWindow(QMainWindow):
@@ -55,6 +56,7 @@ class MainWindow(QMainWindow):
     # INITIALIZATION
 
     def init_background(self):
+        LOG.info('Initializing background image...')
         self._background_label = QLabel()
         self._background_label.setAlignment(Qt.AlignCenter)
         self._background_label.setScaledContents(True)
@@ -64,15 +66,12 @@ class MainWindow(QMainWindow):
         self._background_label.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True) # should not handle events!
 
     def init_pages(self):
-        self.init_crumbs()
-        self._router = Router(self._crumbs)
+        LOG.info('Initializing pages...')
+        self._router = Router()
         self._router.add_page(HomePage(), '/home')
         self._router.add_page(SettingsPage(), '/settings')
         self._router.navigate('/home')
         self.init_pages_layout()
-
-    def init_crumbs(self):
-        self._crumbs = Crumbs()
 
     def init_pages_layout(self):
         self._pages_widget = QWidget()
@@ -82,10 +81,11 @@ class MainWindow(QMainWindow):
         layout.addWidget(self._background_label)
         layout.addWidget(self._router)
         self._pages_widget_layout = QVBoxLayout()
-        self._pages_widget_layout.addWidget(self._crumbs)
+        self._pages_widget_layout.addWidget(self._router.crumbs())
         self._pages_widget_layout.addWidget(self._pages_widget)
 
     def init_main_window(self):
+        LOG.info('Initializing main window...')
         self._central_widget = QWidget()
         self._central_widget.setLayout(self._pages_widget_layout)
         self.setWindowTitle(CASTOR_ANALYTICS_WINDOW_TITLE)
