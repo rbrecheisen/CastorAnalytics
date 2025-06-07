@@ -2,6 +2,7 @@ from importlib.resources import files
 from PySide6.QtWidgets import (
     QMainWindow,
     QStackedWidget,
+    QStackedLayout,
     QWidget,
     QVBoxLayout,
     QPushButton,
@@ -10,7 +11,6 @@ from PySide6.QtWidgets import (
     QLabel,
     QMessageBox,
     QSizePolicy,
-    QGraphicsOpacityEffect,
 )
 from PySide6.QtGui import (
     QGuiApplication,
@@ -21,113 +21,92 @@ from PySide6.QtGui import (
 )
 from PySide6.QtCore import Qt
 
+from castoranalytics.ui.router import Router
+from castoranalytics.ui.crumbs import Crumbs
+from castoranalytics.ui.pages.homepage import HomePage
+from castoranalytics.ui.pages.settingspage import SettingsPage
+
 CASTOR_ANALYTICS_WINDOW_TITLE = 'Castor Analytics'
+CASTOR_ANALYTICS_WINDOW_W = 1024
+CASTOR_ANALYTICS_WINDOW_H = 600
+CASTOR_ANALYTICS_RESOURCES_DIR = 'castoranalytics.resources'
+CASTOR_ANALYTICS_RESOURCES_IMAGES_DIR = 'castoranalytics.resources.images'
+CASTOR_ANALYTICS_RESOURCES_BACKGROUND_IMAGE = 'home.png'
+CASTOR_ANALYTICS_RESOURCES_BACKGROUND_IMAGE_OPACITY = 0.5
+
 
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        self._central_widget = None
+        self._central_layout = None
+        self._background_label = None
+        self._background_label_pixmap = None
+        self._router = None
+        self._pages_widget = None
+        self._pages_widget_layout = None
+        self._crumbs = None
 
-        self._file_menu = None
-        self._file_menu_exit_action = None
-        self._file_menu_open_settings_page_action = None
-        self._home_page = None
-        self._home_page_layout = None
-        self._home_page_background_image_label = None
-        self._home_page_background_image_pixmap = None
-        self._home_page_background_image = None
-        self._study_list_page = None
-        self._study_list_page_layout = None
-        self._study_list_page_study_list_widget = None
-        self._study_page = None
-        self._stacked_widget = None
-
-        self.init_menus()
-        self.init_home_page()
-        self.init_study_list_page()
-        self.init_study_page()
-        self.init_main()
+        self.init_background()
+        self.init_pages()
+        self.init_main_window()
 
     # INITIALIZATION
 
-    def init_menus(self):
-        self.init_file_menu()
+    def init_background(self):
+        self._background_label = QLabel()
+        self._background_label.setAlignment(Qt.AlignCenter)
+        self._background_label.setScaledContents(True)
+        self._background_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        image_path = files(CASTOR_ANALYTICS_RESOURCES_IMAGES_DIR) / CASTOR_ANALYTICS_RESOURCES_BACKGROUND_IMAGE
+        self._background_label.setPixmap(self.apply_opacity_to_pixmap(QPixmap(image_path), CASTOR_ANALYTICS_RESOURCES_BACKGROUND_IMAGE_OPACITY))
+        self._background_label.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True) # should not handle events!
 
-    def init_file_menu(self):
-        self._file_menu = QMenu('File', self)
-        self.init_file_menu_open_settings_page_action()
-        self.init_file_menu_exit_action()
-        self.menuBar().addMenu(self._file_menu)
+    def init_pages(self):
+        self.init_crumbs()
+        self._router = Router(self._crumbs)
+        self._router.add_page(HomePage(), '/home')
+        self._router.add_page(SettingsPage(), '/settings')
+        self._router.navigate('/home')
+        self.init_pages_layout()
 
-    def init_file_menu_open_settings_page_action(self):
-        self._file_menu_open_settings_page_action = QAction('Settings...', self)
-        self._file_menu_open_settings_page_action.triggered.connect(self.handle_open_settings)
-        self._file_menu.addAction(self._file_menu_open_settings_page_action)
+    def init_crumbs(self):
+        self._crumbs = Crumbs()
 
-    def init_file_menu_exit_action(self):
-        self._file_menu_exit_action = QAction('Exit', self)
-        self._file_menu_exit_action.triggered.connect(self.handle_exit)
-        self._file_menu.addAction(self._file_menu_exit_action)
+    def init_pages_layout(self):
+        self._pages_widget = QWidget()
+        layout = QStackedLayout(self._pages_widget)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setStackingMode(QStackedLayout.StackAll)
+        layout.addWidget(self._background_label)
+        layout.addWidget(self._router)
+        self._pages_widget_layout = QVBoxLayout()
+        self._pages_widget_layout.addWidget(self._crumbs)
+        self._pages_widget_layout.addWidget(self._pages_widget)
 
-    def init_home_page(self):
-        self._home_page = QWidget()
-        self._home_page_layout = QVBoxLayout()
-        self._home_page_layout.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self._home_page_background_image_label = QLabel()
-        self._home_page_background_image_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-        self._home_page_background_image_label.setScaledContents(True)
-        self._home_page_background_image_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        image_path = files('castoranalytics.resources.images') / 'home.png'
-        pixmap = QPixmap(image_path)
-        self._home_page_background_image_pixmap = pixmap
-        self._home_page_background_image_label.setPixmap(self.apply_opacity_to_pixmap(pixmap, 0.5))
-        self._home_page_layout.addWidget(self._home_page_background_image_label)
-        self._home_page.setLayout(self._home_page_layout)
-
-    def init_study_list_page(self):
-        self._study_list_page = QWidget()
-        self._study_list_page_layout = QVBoxLayout()
-        self._study_list_page_study_list_widget = QListWidget()
-        self._study_list_page_study_list_widget.itemClicked.connect(self.handle_study_selected)
-        self._study_list_page_layout.addWidget(self._study_list_page_study_list_widget)
-        self._study_list_page.setLayout(self._study_list_page_layout)
-
-    def init_study_page(self):
-        self._study_page = QWidget()
-
-    def init_main(self):
-        self._stacked_widget = QStackedWidget()
-        self._stacked_widget.addWidget(self._home_page)
-        self._stacked_widget.addWidget(self._study_list_page)
-        self._stacked_widget.addWidget(self._study_page)
-        self._stacked_widget.setCurrentWidget(self._home_page)
-        self.setCentralWidget(self._stacked_widget)
+    def init_main_window(self):
+        self._central_widget = QWidget()
+        self._central_widget.setLayout(self._pages_widget_layout)
         self.setWindowTitle(CASTOR_ANALYTICS_WINDOW_TITLE)
-        self.resize(800, 600)
+        self.setCentralWidget(self._central_widget)
+        self.resize(CASTOR_ANALYTICS_WINDOW_W, CASTOR_ANALYTICS_WINDOW_H)
         self.center_window()
         self.show()
 
     # EVENT HANDLERS
 
-    def handle_exit(self):
-        self.close()
 
-    def handle_open_settings(self):
-        pass
-
-    def handle_study_selected(self):
-        pass
 
     # QT EVENT HANDLERS
 
     def resizeEvent(self, event):
-        if self._home_page_background_image_pixmap:
-            scaled_pixmap = self._home_page_background_image_pixmap.scaled(
-                self._home_page_background_image_label.size(),
-                aspectMode=Qt.AspectRatioMode.KeepAspectRatioByExpanding,
-                mode=Qt.TransformationMode.SmoothTransformation,
-            )
-            self._home_page_background_image_label.setPixmap(self.apply_opacity_to_pixmap(scaled_pixmap, 0.5))
+        if self._background_label_pixmap:
+            scaled_pixmap = self._background_label_pixmap.scaled(
+                self._background_label.size(), aspectMode=Qt.AspectRatioMode.IgnoreAspectRatio, mode=Qt.TransformationMode.SmoothTransformation)
+            self._background_label.setPixmap(
+                self.apply_opacity_to_pixmap(
+                    scaled_pixmap, CASTOR_ANALYTICS_RESOURCES_BACKGROUND_IMAGE_OPACITY))
         return super().resizeEvent(event)
 
     # MISCELLANEOUS
