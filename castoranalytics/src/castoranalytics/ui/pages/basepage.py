@@ -10,6 +10,10 @@ class BasePage(QWidget):
     def set_router(self, router):
         self._router = router
 
+    def back(self):
+        if self._router:
+            self._router.back()
+
     def navigate(self, path):
-        if self._router is not None:
+        if self._router:
             self._router.navigate(path)

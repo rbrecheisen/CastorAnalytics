@@ -13,7 +13,7 @@ def main():
     QtWidgets.QApplication.setApplicationName(metadata["Formal-Name"])
     app = QtWidgets.QApplication(sys.argv)
     app.setStyleSheet(BOOTSTRAP_CSS)
-    main_window = MainWindow()
+    MainWindow()
     sys.exit(app.exec())
 
 
