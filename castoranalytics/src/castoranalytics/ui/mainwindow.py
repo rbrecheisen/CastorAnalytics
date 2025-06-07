@@ -22,7 +22,7 @@ from PySide6.QtGui import (
 from PySide6.QtCore import Qt
 
 from castoranalytics.ui.router import Router
-from castoranalytics.ui.pages.homepage import HomePage
+from castoranalytics.ui.pages.studylistpage import StudyListPage
 from castoranalytics.ui.pages.settingspage import SettingsPage
 from castoranalytics.core.logging import LogManager
 
@@ -68,12 +68,10 @@ class MainWindow(QMainWindow):
     def init_pages(self):
         LOG.info('Initializing pages...')
         self._router = Router()
-        self._router.add_page(HomePage(), '/home')
+        self._router.add_page(StudyListPage(), '/studies')
+        # Add StudyPage with path that contains <str:study_id> or something
         self._router.add_page(SettingsPage(), '/settings')
-        self._router.navigate('/home')
-        self.init_pages_layout()
-
-    def init_pages_layout(self):
+        self._router.navigate('/studies')
         self._pages_widget = QWidget()
         layout = QStackedLayout(self._pages_widget)
         layout.setContentsMargins(0, 0, 0, 0)
@@ -93,10 +91,6 @@ class MainWindow(QMainWindow):
         self.resize(CASTOR_ANALYTICS_WINDOW_W, CASTOR_ANALYTICS_WINDOW_H)
         self.center_window()
         self.show()
-
-    # EVENT HANDLERS
-
-
 
     # QT EVENT HANDLERS
 
