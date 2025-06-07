@@ -42,6 +42,7 @@ class SettingsPage(BasePage):
         self._client_id_field = QLineEdit(self.get_setting('castoranalytics.client_id'))
         self._client_secret_field = QLineEdit(self.get_setting('castoranalytics.client_secret'))
         self._form = QFormLayout()
+        self._form.setFieldGrowthPolicy(QFormLayout.AllNonFixedFieldsGrow) # needed on MacOS
         self._form.addRow('API token URL: ', self._token_url_field)
         self._form.addRow('API base URL:', self._base_url_field)
         self._form.addRow('Client ID:', self._client_id_field)
