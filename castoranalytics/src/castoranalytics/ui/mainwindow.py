@@ -1,20 +1,16 @@
-from importlib.resources import files
+import os
+import sys
+
 from PySide6.QtWidgets import (
     QMainWindow,
-    QStackedWidget,
     QStackedLayout,
     QWidget,
     QVBoxLayout,
-    QPushButton,
-    QMenu,
-    QListWidget,
     QLabel,
-    QMessageBox,
     QSizePolicy,
 )
 from PySide6.QtGui import (
     QGuiApplication,
-    QAction,
     QPixmap,
     QPainter, 
     QColor,
@@ -29,12 +25,20 @@ from castoranalytics.core.logging import LogManager
 CASTOR_ANALYTICS_WINDOW_TITLE = 'Castor Analytics'
 CASTOR_ANALYTICS_WINDOW_W = 1024
 CASTOR_ANALYTICS_WINDOW_H = 600
-CASTOR_ANALYTICS_RESOURCES_DIR = 'castoranalytics.resources'
-CASTOR_ANALYTICS_RESOURCES_IMAGES_DIR = 'castoranalytics.resources.images'
+CASTOR_ANALYTICS_RESOURCES_DIR = 'castoranalytics/resources'
+CASTOR_ANALYTICS_RESOURCES_IMAGES_DIR = 'castoranalytics/resources/images'
 CASTOR_ANALYTICS_RESOURCES_BACKGROUND_IMAGE = 'home.png'
 CASTOR_ANALYTICS_RESOURCES_BACKGROUND_IMAGE_OPACITY = 0.25
 
 LOG = LogManager()
+
+
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except AttributeError:
+        base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+    return os.path.join(base_path, relative_path)
 
 
 class MainWindow(QMainWindow):
@@ -61,7 +65,7 @@ class MainWindow(QMainWindow):
         self._background_label.setAlignment(Qt.AlignCenter)
         self._background_label.setScaledContents(True)
         self._background_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        image_path = files(CASTOR_ANALYTICS_RESOURCES_IMAGES_DIR) / CASTOR_ANALYTICS_RESOURCES_BACKGROUND_IMAGE
+        image_path = resource_path(os.path.join(CASTOR_ANALYTICS_RESOURCES_IMAGES_DIR, CASTOR_ANALYTICS_RESOURCES_BACKGROUND_IMAGE))
         self._background_label.setPixmap(self.apply_opacity_to_pixmap(QPixmap(image_path), CASTOR_ANALYTICS_RESOURCES_BACKGROUND_IMAGE_OPACITY))
         self._background_label.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True) # should not handle events!
 

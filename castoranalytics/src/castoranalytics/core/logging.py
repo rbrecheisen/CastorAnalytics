@@ -1,3 +1,4 @@
+import sys
 import datetime
 
 
@@ -7,7 +8,11 @@ class LogManager:
 
     def _log(self, level, message):
         timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        print(f'[{timestamp}] {level} {self._name}: {message}')
+        message = f'[{timestamp}] {level} {self._name}: {message}'
+        if hasattr(sys, '_MEIPASS'):
+            with open('CastorAnalytics.log', 'a', encoding='utf-8') as f:
+                f.write(message + '\n')
+        print(message)
 
     def info(self, message):
         self._log('INFO', message)

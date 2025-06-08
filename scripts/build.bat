@@ -5,7 +5,8 @@ setlocal
 set /p VERSION=<VERSION
 
 if /I "%~1"=="" (
-    echo "Usage: build.bat [--briefcase|--nuitka|--pyinstaller]"
+    @REM echo "Usage: build.bat [--briefcase|--nuitka|--pyinstaller]"
+    echo "Usage: build.bat [--briefcase|--pyinstaller]"
     exit /b 1
 )
 
@@ -18,20 +19,29 @@ if /I "%~1"=="--briefcase" (
     call briefcase create
     call briefcase build
 
-) else if /I "%~1"=="--nuitka" (
+@REM ) else if /I "%~1"=="--nuitka" (
+@REM     rmdir /s /q castoranalytics\build-nuitka
+@REM     cd castoranalytics\src
+@REM     nuitka ^
+@REM         --standalone ^
+@REM         --enable-plugin=pyside6 ^
+@REM         --include-qt-plugins=all ^
+@REM         --include-data-dir=castoranalytics/resources=castoranalytics/resources ^
+@REM         --windows-console-mode=disable ^
+@REM         --output-dir=..\build-nuitka ^
+@REM         --output-filename=CastorAnalytics ^
+@REM         app.py
+        
+) else if /I "%~1"=="--pyinstaller" (
 
-    rmdir /s /q castoranalytics\build-nuitka
-    cd castoranalytics\src
-    call nuitka ^
-        --standalone ^
-        --enable-plugin=pyside6 ^
-        --include-qt-plugins=all ^
-        --include-data-dir=castoranalytics/resources=castoranalytics/resources ^
-        --windows-console-mode=disable ^
-        --output-dir=..\build-nuitka ^
-        --output-filename=CastorAnalytics ^
-        app.py
-) else if /I "%~1"=="--pyinstsaller" (
+    rmdir /s /q castoranalytics\dist
+    cd castoranalytics
+    pyinstaller ^
+        --windowed ^
+        --name "CastorAnalytics" ^
+        --add-data "src/castoranalytics/resources:castoranalytics/resources" ^
+        src\app.py
+
 ) else (
     echo "Usage: build.bat [--briefcase|--nuitka]"
 )
