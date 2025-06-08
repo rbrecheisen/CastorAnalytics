@@ -10,6 +10,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 
 from castoranalytics.ui.pages.basepage import BasePage
+from castoranalytics.ui.utils import to_main_thread
 from castoranalytics.core import Core
 from castoranalytics.core.logging import LogManager
 
@@ -56,23 +57,29 @@ class StudyListPage(BasePage):
             self.get_setting('castoranalytics.client_secret', None),
         )
     
-    def update_study_list(self, client_id, client_secret, token_url, api_base_url):
+    def update_data(self, client_id, client_secret, token_url, api_base_url):
         try:
             core = Core(client_id, client_secret, token_url, api_base_url)
-            studies = core.get_studies()
-            self._table_widget.setRowCount(len(studies))
-            self._table_widget.setColumnCount(1)
-            for row, study in enumerate(studies):
-                item = QTableWidgetItem(study.get_name())
-                item.setData(Qt.UserRole, study)
-                self._table_widget.setItem(row, 0, item)
-            self._table_widget.setHorizontalHeaderLabels(['Study Name'])
-            self._table_widget.setAlternatingRowColors(True)
-            self._table_widget.sortItems(0, Qt.AscendingOrder)
-            self._table_widget.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
-            self._table_widget.horizontalHeader().setDefaultAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+            # IMPORTANT! The callback must be wrapped because Core is calling it from a separate thread
+            # This results in QBasicTimer warnings and should not be allowed. For thread-safety wrap the
+            # callback function with the to_main_thread() utility.
+            core.get_studies_async(callback=to_main_thread(self.data_ready)) # callback must be wrapped to have it run in main thread!
         except Exception as e:
             LOG.error(e)
+
+    def data_ready(self, studies, error):
+        self._table_widget.setRowCount(len(studies))
+        self._table_widget.setColumnCount(1)
+        for row, study in enumerate(studies):
+            item = QTableWidgetItem(study.get_name())
+            item.setData(Qt.UserRole, study)
+            self._table_widget.setItem(row, 0, item)
+        self._table_widget.setHorizontalHeaderLabels(['Study Name'])
+        self._table_widget.setAlternatingRowColors(True)
+        self._table_widget.sortItems(0, Qt.AscendingOrder)
+        self._table_widget.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
+        self._table_widget.horizontalHeader().setDefaultAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+
 
     def showEvent(self, event):
         self.clear_layout()
@@ -80,4 +87,4 @@ class StudyListPage(BasePage):
         if token_url is None or api_base_url is None or client_id is None or client_secret is None:
             self._study_list_layout.addWidget(QLabel('It looks like your API settings are incomplete. Please go to settings.'))
         else:
-            self.update_study_list(client_id, client_secret, token_url, api_base_url)
+            self.update_data(client_id, client_secret, token_url, api_base_url)

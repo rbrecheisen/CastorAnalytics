@@ -49,6 +49,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self._version = None
+        self._spinner = None
         self._central_widget = None
         self._central_layout = None
         self._background_label = None
@@ -64,6 +65,7 @@ class MainWindow(QMainWindow):
 
     def init(self):
         self.init_version()
+        self.init_loading_spinner()
         self.init_background()
         self.init_pages()
         self.init_main_window()
@@ -71,6 +73,9 @@ class MainWindow(QMainWindow):
     def init_version(self):
         with open(resource_path(os.path.join(CASTOR_ANALYTICS_RESOURCES_DIR, 'VERSION')), 'r') as f:
             self._version = f.readline().strip()
+
+    def init_loading_spinner(self):
+        pass
 
     def init_background(self):
         LOG.info('Initializing background image...')
