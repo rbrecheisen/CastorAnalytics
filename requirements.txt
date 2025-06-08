@@ -3,7 +3,7 @@ briefcase==0.3.23
 tomli==2.2.1
 tomli-w==1.2.0
 nuitka==2.7.6
-pyinstaller
+pyinstaller==6.14.0
 
 # Test
 pytest==8.4.0
