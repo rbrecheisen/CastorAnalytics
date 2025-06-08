@@ -14,6 +14,7 @@ from PySide6.QtGui import (
     QPixmap,
     QPainter, 
     QColor,
+    QIcon,
 )
 from PySide6.QtCore import Qt
 
@@ -28,6 +29,8 @@ CASTOR_ANALYTICS_WINDOW_W = 1024
 CASTOR_ANALYTICS_WINDOW_H = 600
 CASTOR_ANALYTICS_RESOURCES_DIR = 'castoranalytics/resources'
 CASTOR_ANALYTICS_RESOURCES_IMAGES_DIR = 'castoranalytics/resources/images'
+CASTOR_ANALYTICS_RESOURCES_IMAGES_ICONS_DIR = 'castoranalytics/resources/images/icons'
+CASTOR_ANALYTICS_RESOURCES_ICON = 'castoranalytics.ico'
 CASTOR_ANALYTICS_RESOURCES_BACKGROUND_IMAGE = 'home.png'
 CASTOR_ANALYTICS_RESOURCES_BACKGROUND_IMAGE_OPACITY = 0.25
 
@@ -45,20 +48,29 @@ def resource_path(relative_path):
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        self._version = None
         self._central_widget = None
         self._central_layout = None
         self._background_label = None
         self._background_label_pixmap = None
         self._router = None
+        self._app_label = None
         self._pages_widget = None
         self._pages_widget_layout = None
         self._crumbs = None
+        self.init()
 
+    # INITIALIZATION
+
+    def init(self):
+        self.init_version()
         self.init_background()
         self.init_pages()
         self.init_main_window()
 
-    # INITIALIZATION
+    def init_version(self):
+        with open(resource_path(os.path.join(CASTOR_ANALYTICS_RESOURCES_DIR, 'VERSION')), 'r') as f:
+            self._version = f.readline().strip()
 
     def init_background(self):
         LOG.info('Initializing background image...')
@@ -72,6 +84,9 @@ class MainWindow(QMainWindow):
 
     def init_pages(self):
         LOG.info('Initializing pages...')
+        self._app_label = QLabel(CASTOR_ANALYTICS_WINDOW_TITLE + f' {self._version}')
+        self._app_label.setAlignment(Qt.AlignCenter)
+        self._app_label.setStyleSheet('color: black; font-size: 16px; font-weight: bold')
         self._router = Router()
         self._router.add_page(StudyListPage(), '/studies')
         self._router.add_page(StudyPage(), '/studies/:study_id')
@@ -84,14 +99,15 @@ class MainWindow(QMainWindow):
         layout.addWidget(self._background_label)
         layout.addWidget(self._router)
         self._pages_widget_layout = QVBoxLayout()
-        self._pages_widget_layout.addWidget(self._router.crumbs())
+        self._pages_widget_layout.addWidget(self._app_label)
         self._pages_widget_layout.addWidget(self._pages_widget)
 
     def init_main_window(self):
         LOG.info('Initializing main window...')
         self._central_widget = QWidget()
         self._central_widget.setLayout(self._pages_widget_layout)
-        self.setWindowTitle(CASTOR_ANALYTICS_WINDOW_TITLE)
+        self.setWindowTitle(CASTOR_ANALYTICS_WINDOW_TITLE + f' {self._version}')
+        self.setWindowIcon(QIcon(resource_path(os.path.join(CASTOR_ANALYTICS_RESOURCES_IMAGES_ICONS_DIR, CASTOR_ANALYTICS_RESOURCES_ICON))))
         self.setCentralWidget(self._central_widget)
         self.resize(CASTOR_ANALYTICS_WINDOW_W, CASTOR_ANALYTICS_WINDOW_H)
         self.center_window()

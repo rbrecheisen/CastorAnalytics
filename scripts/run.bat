@@ -2,8 +2,6 @@
 
 setlocal
 
-set /p VERSION=<VERSION
-
 if /I "%~1"=="" (
     echo "Usage: run.bat [--dev|--test|--exe|--pyinstaller]"
     exit /b 1

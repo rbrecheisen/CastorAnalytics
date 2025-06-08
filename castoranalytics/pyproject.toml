@@ -1,6 +1,7 @@
 [tool.briefcase]
 project_name = "Castor Analytics"
 bundle = "com.rbeesoft"
+icon = "src/castoranalytics/resources/images/icons/castoranalytics"
 version = "0.0.1"
 url = "https://rbeesoft.nl/castoranalytics"
 author = "Ralph Brecheisen"

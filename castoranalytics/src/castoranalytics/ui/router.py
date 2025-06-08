@@ -16,12 +16,6 @@ class Router(QStackedWidget):
     def crumbs(self):
         return self._crumbs
 
-    # def add_page(self, page, path):
-    #     if path not in self._pages.keys():
-    #         self._pages[path] = page
-    #         self._pages[path].set_router(self)
-    #         self.addWidget(page)
-
     def add_page(self, page, path_pattern):
         route = Route(page, path_pattern)
         self._routes.append(route)
@@ -30,14 +24,6 @@ class Router(QStackedWidget):
 
     def back(self):
         self.navigate(self._prev_path)
-
-    # def navigate(self, path):
-    #     if path in self._pages.keys():
-    #         if path != self._curr_path:
-    #             self._prev_path = self._curr_path
-    #             self._curr_path = path
-    #             self.setCurrentWidget(self._pages[self._curr_path])
-    #             self._crumbs.update(self._curr_path)
 
     def navigate(self, path):
         for route in self._routes:

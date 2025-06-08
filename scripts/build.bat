@@ -2,8 +2,6 @@
 
 setlocal
 
-set /p VERSION=<VERSION
-
 if /I "%~1"=="" (
     echo "Usage: build.bat [--briefcase|--pyinstaller]"
     exit /b 1
