@@ -5,7 +5,7 @@ setlocal
 set /p VERSION=<VERSION
 
 if /I "%~1"=="" (
-    echo "Usage: build.bat [--briefcase|--nuitka]"
+    echo "Usage: build.bat [--briefcase|--nuitka|--pyinstaller]"
     exit /b 1
 )
 
@@ -31,6 +31,7 @@ if /I "%~1"=="--briefcase" (
         --output-dir=..\build-nuitka ^
         --output-filename=CastorAnalytics ^
         app.py
+) else if /I "%~1"=="--pyinstsaller" (
 ) else (
     echo "Usage: build.bat [--briefcase|--nuitka]"
 )
