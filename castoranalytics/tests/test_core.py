@@ -30,7 +30,7 @@ def api_base_url():
 def test_get_countries(client_id, client_secret, token_url, api_base_url):
     core = Core(client_id, client_secret, token_url, api_base_url)
     assert core is not None
-    countries = core.get_countries_background()
+    countries = core.get_countries()
     assert len(countries) > 0
     assert isinstance(countries, list)
     for country in countries:
@@ -45,7 +45,7 @@ def test_get_countries(client_id, client_secret, token_url, api_base_url):
 def test_get_studies(client_id, client_secret, token_url, api_base_url):
     core = Core(client_id, client_secret, token_url, api_base_url)
     assert core is not None
-    studies = core.get_studies_background()
+    studies = core.get_studies()
     assert len(studies) > 0
     assert isinstance(studies, list)
     for study in studies:

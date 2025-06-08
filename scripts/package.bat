@@ -2,17 +2,14 @@
 
 setlocal
 
-@REM if /I "%~1"=="" (
-@REM     echo "Usage: build.bat [--briefcase|--pyinstaller]"
-@REM     exit /b 1
-@REM )
+set /p VERSION=<castoranalytics\src\castoranalytics\resources\VERSION
+
+python scripts\python\updatetomlversion.py %VERSION%
 
 set START_DIR=%CD%
 
-rmdir /s /q castoranalytics\build
 cd castoranalytics
-call briefcase create
-call briefcase build
+call briefcase package --adhoc-sign
 
 @REM if /I "%~1"=="--briefcase" (
 @REM     rmdir /s /q castoranalytics\build
