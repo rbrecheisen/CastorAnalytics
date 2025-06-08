@@ -21,6 +21,7 @@ class StudyListPage(BasePage):
     def __init__(self):
         super(StudyListPage, self).__init__(name='Studies')
         self._settings_button = None
+        self._incomplete_settings_label = None
         self._layout = None
         self._study_list_layout = None
         self._table_widget = None
@@ -29,6 +30,7 @@ class StudyListPage(BasePage):
     def init(self):
         self._settings_button = QPushButton('Go to settings', self)
         self._settings_button.clicked.connect(self.handle_go_to_settings)
+        self._incomplete_settings_label = QLabel()
         self._table_widget = QTableWidget()
         self._table_widget.setSortingEnabled(True)
         self._table_widget.verticalHeader().setVisible(False)
@@ -38,6 +40,7 @@ class StudyListPage(BasePage):
         self._layout.setAlignment(Qt.AlignmentFlag.AlignTop)
         self._layout.addWidget(self._settings_button)
         self._layout.addWidget(self._table_widget)
+        self._layout.addWidget(self._incomplete_settings_label)
         self.setLayout(self._layout)
 
     def handle_go_to_settings(self):
@@ -45,9 +48,6 @@ class StudyListPage(BasePage):
 
     def handle_row_selected(self, item):
         self.navigate(f'/studies/{item.data(Qt.UserRole).get_id()}')
-
-    def clear_layout(self):
-        self._table_widget.clearContents()
 
     def get_api_settings(self):
         return (
@@ -80,11 +80,11 @@ class StudyListPage(BasePage):
         self._table_widget.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
         self._table_widget.horizontalHeader().setDefaultAlignment(Qt.AlignLeft | Qt.AlignVCenter)
 
-
     def showEvent(self, event):
-        self.clear_layout()
+        self._table_widget.clearContents()
         token_url, api_base_url, client_id, client_secret = self.get_api_settings()
         if token_url is None or api_base_url is None or client_id is None or client_secret is None:
-            self._study_list_layout.addWidget(QLabel('It looks like your API settings are incomplete. Please go to settings.'))
+            self._incomplete_settings_label.setText('It looks like your API settings are incomplete. Please go to settings.')
         else:
+            self._incomplete_settings_label.setText('')
             self.update_data(client_id, client_secret, token_url, api_base_url)

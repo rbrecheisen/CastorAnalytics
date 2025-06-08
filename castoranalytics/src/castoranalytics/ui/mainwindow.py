@@ -30,7 +30,7 @@ CASTOR_ANALYTICS_WINDOW_H = 600
 CASTOR_ANALYTICS_RESOURCES_DIR = 'castoranalytics/resources'
 CASTOR_ANALYTICS_RESOURCES_IMAGES_DIR = 'castoranalytics/resources/images'
 CASTOR_ANALYTICS_RESOURCES_IMAGES_ICONS_DIR = 'castoranalytics/resources/images/icons'
-CASTOR_ANALYTICS_RESOURCES_ICON = 'castoranalytics.ico'
+CASTOR_ANALYTICS_RESOURCES_ICON = 'castoranalytics.icns' if sys.platform.startswith('darwin') else 'castoranalytics.ico'
 CASTOR_ANALYTICS_RESOURCES_BACKGROUND_IMAGE = 'home.png'
 CASTOR_ANALYTICS_RESOURCES_BACKGROUND_IMAGE_OPACITY = 0.25
 
