@@ -26,3 +26,6 @@ class BasePage(QWidget):
     
     def set_setting(self, name, value):
         self._settings.set(name, value)
+
+    def on_navigate(self, params):
+        pass

@@ -16,4 +16,15 @@ QPushButton:hover {
 QPushButton:pressed {
     background-color: #0a58ca;
 }
+
+QTableWidget {
+    font-size: 12px;
+}
+
+QHeaderView::section {
+    font-size: 14px;
+    font-weight: bold;
+    padding: 4px;
+}
+
 """

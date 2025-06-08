@@ -18,42 +18,33 @@ class SettingsPage(BasePage):
         self._api_settings_label = None
         self._back_button = None
         self._token_url_field = None
-        self._base_url_field = None
+        self._api_base_url_field = None
         self._client_id_field = None
         self._client_secret_field = None
         self._form = None
         self._spacer = None
         self._save_button = None
 
-        self.init_back_button()
-        self.init_form()
-        self.init_save_button()
-        self.init_main_page()
+        self.init()
 
-    def init_back_button(self):
+    def init(self):
         self._back_button = QPushButton('Back', self)
         self._back_button.clicked.connect(self.handle_back)
-
-    def init_form(self):
         self._api_settings_label = QLabel('API settings', self)
         self._api_settings_label.setStyleSheet('font-size: 14px; font-weight: bold;')
         self._token_url_field = QLineEdit(self.get_setting('castoranalytics.token_url', default='https://data.castoredc.com/oauth/token'))
-        self._base_url_field = QLineEdit(self.get_setting('castoranalytics.base_url', default='https://data.castoredc.com/api'))
+        self._api_base_url_field = QLineEdit(self.get_setting('castoranalytics.api_base_url', default='https://data.castoredc.com/api'))
         self._client_id_field = QLineEdit(self.get_setting('castoranalytics.client_id'))
         self._client_secret_field = QLineEdit(self.get_setting('castoranalytics.client_secret'))
         self._form = QFormLayout()
         self._form.setFieldGrowthPolicy(QFormLayout.AllNonFixedFieldsGrow) # needed on MacOS
-        self._form.addRow('API token URL: ', self._token_url_field)
-        self._form.addRow('API base URL:', self._base_url_field)
+        self._form.addRow('Token URL: ', self._token_url_field)
+        self._form.addRow('API base URL:', self._api_base_url_field)
         self._form.addRow('Client ID:', self._client_id_field)
         self._form.addRow('Client secret:', self._client_secret_field)
-
-    def init_save_button(self):
         self._save_button = QPushButton('Save settings', self)
         self._save_button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Preferred)
         self._save_button.clicked.connect(self.handle_save)
-
-    def init_main_page(self):
         layout = QVBoxLayout(self)
         layout.setAlignment(Qt.AlignmentFlag.AlignTop)
         layout.addWidget(self._back_button)
@@ -68,7 +59,7 @@ class SettingsPage(BasePage):
 
     def handle_save(self):
         self._settings.setValue('castoranalytics.token_url', self._token_url_field.text())
-        self._settings.setValue('castoranalytics.base_url', self._base_url_field.text())
+        self._settings.setValue('castoranalytics.api_base_url', self._api_base_url_field.text())
         self._settings.setValue('castoranalytics.client_id', self._client_id_field.text())
         self._settings.setValue('castoranalytics.client_secret', self._client_secret_field.text())
         self.back()

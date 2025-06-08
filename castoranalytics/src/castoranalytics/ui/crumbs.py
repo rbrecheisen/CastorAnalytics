@@ -6,4 +6,4 @@ class Crumbs(QLabel):
         super(Crumbs, self).__init__()
 
     def update(self, path):
-        self.setText(path.replace('/', ' > '))
+        self.setText(path)

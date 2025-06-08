@@ -3,7 +3,7 @@ from PySide6.QtCore import QSettings
 
 class Settings(QSettings):
     def __init__(self):
-        super(Settings, self).__init__('com.rbeesoft', 'castoranalytics')
+        super(Settings, self).__init__(QSettings.IniFormat, QSettings.UserScope, 'com.rbeesoft', 'castoranalytics')
 
     def get(self, name, default=None):
         value = self.value(name)

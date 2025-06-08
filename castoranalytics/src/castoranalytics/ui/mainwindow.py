@@ -19,6 +19,7 @@ from PySide6.QtCore import Qt
 
 from castoranalytics.ui.router import Router
 from castoranalytics.ui.pages.studylistpage import StudyListPage
+from castoranalytics.ui.pages.studypage import StudyPage
 from castoranalytics.ui.pages.settingspage import SettingsPage
 from castoranalytics.core.logging import LogManager
 
@@ -73,7 +74,7 @@ class MainWindow(QMainWindow):
         LOG.info('Initializing pages...')
         self._router = Router()
         self._router.add_page(StudyListPage(), '/studies')
-        # Add StudyPage with path that contains <str:study_id> or something
+        self._router.add_page(StudyPage(), '/studies/:study_id')
         self._router.add_page(SettingsPage(), '/settings')
         self._router.navigate('/studies')
         self._pages_widget = QWidget()
