@@ -1,5 +1,3 @@
-import json
-import hashlib
 import threading
 
 from concurrent.futures import ThreadPoolExecutor
@@ -7,6 +5,7 @@ from concurrent.futures import ThreadPoolExecutor
 from castoranalytics.core.singleton import singleton
 from castoranalytics.core.api.study import Study
 from castoranalytics.core.api.studydetails import StudyDetails
+from castoranalytics.core.api.studysite import StudySite
 from castoranalytics.core.api.country import Country
 from castoranalytics.core.logging import LogManager
 from castoranalytics.core.cache import Cache
@@ -74,18 +73,19 @@ class Core:
             return study
         
     def get_study_sites(self, study_id):
+        LOG.info(f'Core.get_study_sites() study_id={study_id}')
         study_sites = self._cache.get(f'studies/{study_id}/sites')
         if study_sites:
             return study_sites
         with CastorApiClient(self._client_id, self._client_secret, self._token_url, self._api_base_url) as client:
-            sites = self.get_sites(study_id)
-            participants = self.get_participants(study_id)
+            study_sites_data = client.get_study_sites(study_id)
+            participants = client.get_participants(study_id)
             # Get participant site abbreviations
             participant_site_abbreviations = {}
             for participant in participants:
                 participant_site_abbreviations[participant['participant_id']] = participant['_embedded']['site']['abbreviation']
             # Get participant progress
-            participant_progress = self.get_participant_progress(study_id)
+            participant_progress = client.get_participant_progress(study_id)
             # Calculate nr. records and form completion rates
             nr_records_per_site = {}
             completion_rates_per_site = {}
@@ -104,15 +104,18 @@ class Core:
                 completion_rate = cummulative_progress / float(len(item['forms']))
                 completion_rates_per_site[site_abbreviation] += completion_rate
             # Update site info
-            for site in sites:
-                site['nr_records'] = 0
-                if site['abbreviation'] in nr_records_per_site.keys():
-                    site['nr_records'] = nr_records_per_site[site['abbreviation']]
-                site['completion_rate'] = 0
-                if site['abbreviation'] in completion_rates_per_site.keys():
-                    site['completion_rate'] = completion_rates_per_site[site['abbreviation']] / float(site['nr_records']) if site['nr_records'] > 0 else 0
-            self._cache.set(f'studies/{study_id}/sites', sites)
-            return sites    
+            for study_site_data in study_sites_data:
+                study_site_data['nr_records'] = 0
+                if study_site_data['abbreviation'] in nr_records_per_site.keys():
+                    study_site_data['nr_records'] = nr_records_per_site[study_site_data['abbreviation']]
+                study_site_data['completion_rate'] = 0
+                if study_site_data['abbreviation'] in completion_rates_per_site.keys():
+                    study_site_data['completion_rate'] = completion_rates_per_site[study_site_data['abbreviation']] / float(study_site_data['nr_records']) if study_site_data['nr_records'] > 0 else 0
+            study_sites = []
+            for study_site_data in study_sites_data:
+                study_sites.append(StudySite(study_site_data))
+            self._cache.set(f'studies/{study_id}/sites', study_sites)
+            return study_sites    
         
     # ASYNCHRONOUS METHODS
         
@@ -124,6 +127,9 @@ class Core:
 
     def get_study_async(self, callback, *args):
         self.run_background_task(self.get_study, callback, *args)
+
+    def get_study_sites_async(self, callback, *args):
+        self.run_background_task(self.get_study_sites, callback, *args)
 
     # HELPERS
 

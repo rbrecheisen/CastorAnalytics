@@ -68,8 +68,8 @@ class CastorApiClient:
         response_data = response.json()
         return int(response_data.get('total_items', 0))
 
-    def get_sites(self, study_id):
-        sites, current_page = [], 1
+    def get_study_sites(self, study_id):
+        study_sites, current_page = [], 1
         while True:
             response = self._session.get(f'{self._api_url}/study/{study_id}/site?page={current_page}')
             response.raise_for_status()
@@ -77,11 +77,13 @@ class CastorApiClient:
             new_sites = response_data.get('_embedded', {}).get('sites', [])
             if not new_sites:
                 break
-            sites.extend(new_sites)
+            study_sites.extend(new_sites)
             if current_page >= response_data.get('page_count', 1):
                 break
             current_page += 1
-        return sites
+        # for item in study_sites:
+        #     print(item)
+        return study_sites
 
     def get_statistics(self, study_id):
         response = self._session.get(f'{self._api_url}/study/{study_id}/statistics')
