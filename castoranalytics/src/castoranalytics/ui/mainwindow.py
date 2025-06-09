@@ -22,7 +22,9 @@ from PySide6.QtCore import Qt
 from castoranalytics.ui.router import Router
 from castoranalytics.ui.pages.studylistpage import StudyListPage
 from castoranalytics.ui.pages.studypage import StudyPage
+from castoranalytics.ui.pages.studysitelistpage import StudySiteListPage
 from castoranalytics.ui.pages.settingspage import SettingsPage
+from castoranalytics.ui.utils import Label
 from castoranalytics.core.logging import LogManager
 
 CASTOR_ANALYTICS_WINDOW_TITLE = 'Castor Analytics'
@@ -98,12 +100,12 @@ class MainWindow(QMainWindow):
 
     def init_pages(self):
         LOG.info('Initializing pages...')
-        self._app_label = QLabel(CASTOR_ANALYTICS_WINDOW_TITLE + f' {self._version}')
+        self._app_label = Label(CASTOR_ANALYTICS_WINDOW_TITLE + f' {self._version}', type=Label.HEADING1)
         self._app_label.setAlignment(Qt.AlignCenter)
-        self._app_label.setStyleSheet('color: black; font-size: 16px; font-weight: bold')
         self._router = Router()
         self._router.add_page(StudyListPage(), '/studies')
         self._router.add_page(StudyPage(), '/studies/:study_id')
+        self._router.add_page(StudySiteListPage(), '/studies/:study_id/sites')
         self._router.add_page(SettingsPage(), '/settings')
         self._router.navigate('/studies')
         self._pages_widget = QWidget()

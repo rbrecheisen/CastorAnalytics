@@ -96,13 +96,14 @@ class Label(QLabel):
     HEADING2 = 2
     HEADING3 = 3
 
-    def __init__(self, text, type=None):
+    def __init__(self, text, type=None, style=''):
         super(Label, self).__init__(text)
         if type == self.HEADING1:
-            self.setStyleSheet('font-size: 18px; font-weight: bold; color: darkslateblue;')
+            style = f'font-size: 18px; font-weight: bold; color: darkslateblue; {style}'
         elif type == self.HEADING2:
-            self.setStyleSheet('font-size: 16px; font-weight: bold; color: darkslateblue;')
+            style = f'font-size: 16px; font-weight: bold; color: darkslateblue; {style}'
         elif type == self.HEADING3:
-            self.setStyleSheet('font-size: 14px; font-weight: bold; color: darkslateblue;')
+            style = f'font-size: 14px; font-weight: bold; color: darkslateblue; {style}'
         else:
-            self.setStyleSheet('font-size: 12px; color: slateblue;')
+            style = f'font-size: 12px; color: slateblue; {style}'
+        self.setStyleSheet(style)
