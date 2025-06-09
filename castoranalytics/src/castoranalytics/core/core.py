@@ -5,21 +5,33 @@ from concurrent.futures import ThreadPoolExecutor
 from castoranalytics.core.singleton import singleton
 from castoranalytics.core.api.study import Study
 from castoranalytics.core.api.country import Country
+from castoranalytics.core.logging import LogManager
 from castoranalytics.core.api.castorapiclient import CastorApiClient
+
+LOG = LogManager()
 
 
 @singleton
 class Core:
-    def __init__(self, client_id, client_secret, token_url, api_base_url):
-        self._client_id = client_id
-        self._client_secret = client_secret
-        self._token_url = token_url
-        self._api_base_url = api_base_url
+    def __init__(self):
+        self._client_id = None
+        self._client_secret = None
+        self._token_url = None
+        self._api_base_url = None
         self._countries = None
         self._studies = None
         self._executor = ThreadPoolExecutor(max_workers=4)
         self._callbacks_lock = threading.Lock()
         self._callbacks = {}
+
+    def update_settings(self, client_id, client_secret, token_url, api_base_url):
+        self._client_id = client_id
+        self._client_secret = client_secret
+        self._token_url = token_url
+        self._api_base_url = api_base_url
+
+    def ready(self):
+        return self._client_id is not None and self._client_secret is not None and self._token_url is not None and self._api_base_url is not None
 
     def get_countries(self):
         if self._countries:

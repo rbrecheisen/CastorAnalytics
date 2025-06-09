@@ -17,14 +17,13 @@ class SettingsPage(BasePage):
         super(SettingsPage, self).__init__(name='Settings')
         self._api_settings_label = None
         self._back_button = None
-        self._token_url_field = None
-        self._api_base_url_field = None
         self._client_id_field = None
         self._client_secret_field = None
+        self._token_url_field = None
+        self._api_base_url_field = None
         self._form = None
         self._spacer = None
         self._save_button = None
-
         self.init()
 
     def init(self):
@@ -45,14 +44,11 @@ class SettingsPage(BasePage):
         self._save_button = QPushButton('Save settings', self)
         self._save_button.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Preferred)
         self._save_button.clicked.connect(self.handle_save)
-        layout = QVBoxLayout(self)
-        layout.setAlignment(Qt.AlignmentFlag.AlignTop)
-        layout.addWidget(self._back_button)
-        layout.addWidget(self._api_settings_label)
-        layout.addLayout(self._form)
-        layout.addItem(QSpacerItem(0, 20, QSizePolicy.Minimum, QSizePolicy.Expanding))
-        layout.addWidget(self._save_button)
-        self.setLayout(layout)
+        self.get_layout().addWidget(self._back_button)
+        self.get_layout().addWidget(self._api_settings_label)
+        self.get_layout().addLayout(self._form)
+        self.get_layout().addItem(QSpacerItem(0, 20, QSizePolicy.Minimum, QSizePolicy.Expanding))
+        self.get_layout().addWidget(self._save_button)
 
     def handle_back(self):
         self.back()

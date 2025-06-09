@@ -15,6 +15,7 @@ from PySide6.QtGui import (
     QPainter, 
     QColor,
     QIcon,
+    QAction,
 )
 from PySide6.QtCore import Qt
 
@@ -55,6 +56,9 @@ class MainWindow(QMainWindow):
         self._background_label_pixmap = None
         self._router = None
         self._app_label = None
+        self._file_menu = None
+        self._file_menu_settings_action = None
+        self._file_menu_exit_action = None
         self._pages_widget = None
         self._pages_widget_layout = None
         self._crumbs = None
@@ -65,6 +69,7 @@ class MainWindow(QMainWindow):
     def init(self):
         self.init_version()
         self.init_background()
+        self.init_menus()
         self.init_pages()
         self.init_main_window()
 
@@ -81,6 +86,15 @@ class MainWindow(QMainWindow):
         image_path = resource_path(os.path.join(CASTOR_ANALYTICS_RESOURCES_IMAGES_DIR, CASTOR_ANALYTICS_RESOURCES_BACKGROUND_IMAGE))
         self._background_label.setPixmap(self.apply_opacity_to_pixmap(QPixmap(image_path), CASTOR_ANALYTICS_RESOURCES_BACKGROUND_IMAGE_OPACITY))
         self._background_label.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True) # should not handle events!
+
+    def init_menus(self):
+        self._file_menu = self.menuBar().addMenu('File')
+        self._file_menu_settings_action = QAction('Settings', self)
+        self._file_menu_settings_action.triggered.connect(self.handle_open_settings_page)
+        self._file_menu_exit_action = QAction('Exit', self)
+        self._file_menu_exit_action.triggered.connect(self.close)
+        self._file_menu.addAction(self._file_menu_settings_action)
+        self._file_menu.addAction(self._file_menu_exit_action)
 
     def init_pages(self):
         LOG.info('Initializing pages...')
@@ -99,7 +113,7 @@ class MainWindow(QMainWindow):
         layout.addWidget(self._background_label)
         layout.addWidget(self._router)
         self._pages_widget_layout = QVBoxLayout()
-        self._pages_widget_layout.addWidget(self._app_label)
+        # self._pages_widget_layout.addWidget(self._app_label)
         self._pages_widget_layout.addWidget(self._pages_widget)
 
     def init_main_window(self):
@@ -113,7 +127,7 @@ class MainWindow(QMainWindow):
         self.center_window()
         self.show()
 
-    # QT EVENT HANDLERS
+    # EVENT HANDLERS
 
     def resizeEvent(self, event):
         if self._background_label_pixmap:
@@ -123,6 +137,9 @@ class MainWindow(QMainWindow):
                 self.apply_opacity_to_pixmap(
                     scaled_pixmap, CASTOR_ANALYTICS_RESOURCES_BACKGROUND_IMAGE_OPACITY))
         return super().resizeEvent(event)
+
+    def handle_open_settings_page(self):
+        self._router.navigate('/settings')
 
     # MISCELLANEOUS
 
