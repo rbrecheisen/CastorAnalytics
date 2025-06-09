@@ -4,6 +4,7 @@ from concurrent.futures import ThreadPoolExecutor
 
 from castoranalytics.core.singleton import singleton
 from castoranalytics.core.api.study import Study
+from castoranalytics.core.api.studydetails import StudyDetails
 from castoranalytics.core.api.country import Country
 from castoranalytics.core.logging import LogManager
 from castoranalytics.core.api.castorapiclient import CastorApiClient
@@ -51,14 +52,31 @@ class Core:
                 self._studies.append(Study(study_data))
             return self._studies
         
+    def get_study(self, study_id):
+        with CastorApiClient(self._client_id, self._client_secret, self._token_url, self._api_base_url) as client:
+            study_data = client.get_study(study_id)
+            study_statistics = client.get_statistics(study_id)
+            fields = client.get_fields(study_id)
+            study_data['nr_sites'] = client.get_number_of_sites(study_id)
+            study_data['nr_participants'] = study_statistics['records']['total_count']
+            study_data['nr_fields'] = len(fields)
+            return StudyDetails(study_data)
+        
+    # ASYNCHRONOUS METHODS
+        
     def get_countries_async(self, callback):
         self.run_background_task(self.get_countries, callback)
 
     def get_studies_async(self, callback):
         self.run_background_task(self.get_studies, callback)
+
+    def get_study_async(self, callback, *args):
+        self.run_background_task(self.get_study, callback, *args)
+
+    # HELPERS
         
-    def run_background_task(self, func, callback):
-        future = self._executor.submit(func)
+    def run_background_task(self, func, callback, *args, **kwargs):
+        future = self._executor.submit(func, *args, **kwargs)
         with self._callbacks_lock:
             self._callbacks[future] = callback
         future.add_done_callback(self.handle_task_done)

@@ -13,6 +13,8 @@ from castoranalytics.ui.utils import to_main_thread, BusyOverlay
 
 LOG = LogManager()
 
+API_SETTINGS_ERROR_MESSAGE = 'It looks like your API settings are incomplete. Please go to settings.'
+
 
 class BasePage(QWidget):
     def __init__(self, name):
@@ -20,24 +22,20 @@ class BasePage(QWidget):
         self._name = name
         self._router = None
         self._settings = Settings()
-        # self._go_to_settings_button = None
-        self._settings_label = None
+        self._error_label = None
         self._busy_overlay = None
         self._page_layout = None
         self._core = None
         self.init_internal()
 
     def init_internal(self):
-        # self._go_to_settings_button = QPushButton('Go to settings', self)
-        # self._go_to_settings_button.clicked.connect(self.handle_go_to_settings)
-        self._settings_label = QLabel()
+        self._error_label = QLabel()
         if not self.get_core().ready():
-            self._settings_label.setText('It looks like your API settings are incomplete. Please go to settings.')
+            self._error_label.setText(API_SETTINGS_ERROR_MESSAGE)
         self._busy_overlay = BusyOverlay(self)
         self._page_layout = QVBoxLayout(self)
         self._page_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
-        # self._page_layout.addWidget(self._go_to_settings_button)
-        self._page_layout.addWidget(self._settings_label)
+        self._page_layout.addWidget(self._error_label)
         self.setLayout(self._page_layout)
 
     def get_core(self):
@@ -58,18 +56,21 @@ class BasePage(QWidget):
     def load_data(self, func_name, *args, **kwargs):
         func_name = func_name if func_name.endswith('_async') else func_name + '_async'
         try:
-            func = getattr(self.get_core(), func_name)
-            self._busy_overlay.show_overlay()
-            func(callback=to_main_thread(self.data_ready_internal), *args, **kwargs)
+            if self.get_core().ready():
+                func = getattr(self.get_core(), func_name)
+                self._busy_overlay.show_overlay()
+                func(to_main_thread(self.on_data_ready_internal), *args, **kwargs)
+            else:
+                self._error_label.setText(API_SETTINGS_ERROR_MESSAGE)
         except Exception as e:
             self._busy_overlay.hide_overlay()
             LOG.error(e)
 
-    def data_ready_internal(self, result, error):
-        self.data_ready(result, error)
+    def on_data_ready_internal(self, result, error):
+        self.on_data_ready(result, error)
         self._busy_overlay.hide_overlay()
 
-    def data_ready(self, result, error):
+    def on_data_ready(self, result, error):
         raise NotImplementedError('Must be implemented in child class')
 
     def set_router(self, router):

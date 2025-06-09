@@ -89,3 +89,20 @@ class BusyOverlay(QWidget):
         if obj == self.parent() and event.type() == QEvent.Resize:
             self.resize(self.parent().size())
         return super().eventFilter(obj, event)
+    
+
+class Label(QLabel):
+    HEADING1 = 1
+    HEADING2 = 2
+    HEADING3 = 3
+
+    def __init__(self, text, type=None):
+        super(Label, self).__init__(text)
+        if type == self.HEADING1:
+            self.setStyleSheet('font-size: 18px; font-weight: bold; color: darkslateblue;')
+        elif type == self.HEADING2:
+            self.setStyleSheet('font-size: 16px; font-weight: bold; color: darkslateblue;')
+        elif type == self.HEADING3:
+            self.setStyleSheet('font-size: 14px; font-weight: bold; color: darkslateblue;')
+        else:
+            self.setStyleSheet('font-size: 12px; color: slateblue;')

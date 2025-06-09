@@ -1,8 +1,14 @@
 from PySide6.QtWidgets import (
     QPushButton,
+    QTableWidget,
+    QTableWidgetItem,
+    QHeaderView,
+    QSizePolicy,
 )
+from PySide6.QtCore import Qt
 
 from castoranalytics.ui.pages.basepage import BasePage
+from castoranalytics.ui.utils import Label
 from castoranalytics.core.logging import LogManager
 
 LOG = LogManager()
@@ -12,12 +18,48 @@ class StudyPage(BasePage):
     def __init__(self):
         super(StudyPage, self).__init__(name='Study')
         self._back_button = None
+        self._study_id = None
+        self._study_name_label = None
+        self._table_widget = None
         self.init()
 
     def init(self):
         self._back_button = QPushButton('Back', self)
         self._back_button.clicked.connect(self.handle_back)
+        self._study_name_label = Label('', type=Label.HEADING1)
+        self._table_widget = QTableWidget()
+        self._table_widget.setSelectionMode(QTableWidget.NoSelection)
+        self._table_widget.horizontalHeader().setVisible(False)
+        self._table_widget.verticalHeader().setVisible(False)
+        self._table_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.get_layout().addWidget(self._back_button)
+        self.get_layout().addWidget(self._study_name_label)
+        self.get_layout().addWidget(self._table_widget)
 
     def handle_back(self):
         self.back()
+
+    def on_navigate(self, params):
+        self._study_id = params.get('study_id', None)
+        if self._study_id:
+            self._table_widget.clearContents()
+            self.load_data('get_study', self._study_id)
+
+    def on_data_ready(self, study, error):
+        self._study_name_label.setText(study.get_name())
+        self._table_widget.setRowCount(5)
+        self._table_widget.setColumnCount(2)
+        self._table_widget.setItem(0, 0, QTableWidgetItem('Study ID'))
+        self._table_widget.setItem(0, 1, QTableWidgetItem(study.get_id()))
+        self._table_widget.setItem(1, 0, QTableWidgetItem('Number of sites'))
+        self._table_widget.setItem(1, 1, QTableWidgetItem(str(study.get_nr_sites())))
+        self._table_widget.setItem(2, 0, QTableWidgetItem('Number of participants'))
+        self._table_widget.setItem(2, 1, QTableWidgetItem(str(study.get_nr_participants())))
+        self._table_widget.setItem(3, 0, QTableWidgetItem('Number of fields'))
+        self._table_widget.setItem(3, 1, QTableWidgetItem(str(study.get_nr_fields())))
+        self._table_widget.setItem(4, 0, QTableWidgetItem('Created on'))
+        self._table_widget.setItem(4, 1, QTableWidgetItem(str(study.get_created_on())))
+        self._table_widget.setAlternatingRowColors(True)
+        self._table_widget.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
+        self._table_widget.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
+        self._table_widget.horizontalHeader().setDefaultAlignment(Qt.AlignLeft | Qt.AlignVCenter)

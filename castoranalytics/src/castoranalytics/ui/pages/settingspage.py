@@ -10,6 +10,7 @@ from PySide6.QtWidgets import (
 from PySide6.QtCore import Qt
 
 from castoranalytics.ui.pages.basepage import BasePage
+from castoranalytics.ui.utils import Label
 
 
 class SettingsPage(BasePage):
@@ -29,8 +30,7 @@ class SettingsPage(BasePage):
     def init(self):
         self._back_button = QPushButton('Back', self)
         self._back_button.clicked.connect(self.handle_back)
-        self._api_settings_label = QLabel('API settings', self)
-        self._api_settings_label.setStyleSheet('font-size: 14px; font-weight: bold;')
+        self._api_settings_label = Label('API settings', type=Label.HEADING1)
         self._token_url_field = QLineEdit(self.get_setting('castoranalytics.token_url', default='https://data.castoredc.com/oauth/token'))
         self._api_base_url_field = QLineEdit(self.get_setting('castoranalytics.api_base_url', default='https://data.castoredc.com/api'))
         self._client_id_field = QLineEdit(self.get_setting('castoranalytics.client_id'))
