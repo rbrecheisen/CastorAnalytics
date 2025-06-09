@@ -19,9 +19,12 @@ QPushButton:pressed {
 
 QTableWidget {
     font-size: 12px;
+    font-weight: bold;
+    color: slateblue;
 }
 
 QHeaderView::section {
+    color: darkslateblue;
     font-size: 14px;
     font-weight: bold;
     padding: 4px;

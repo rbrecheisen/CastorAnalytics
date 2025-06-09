@@ -113,7 +113,7 @@ class MainWindow(QMainWindow):
         layout.addWidget(self._background_label)
         layout.addWidget(self._router)
         self._pages_widget_layout = QVBoxLayout()
-        # self._pages_widget_layout.addWidget(self._app_label)
+        self._pages_widget_layout.addWidget(self._app_label)
         self._pages_widget_layout.addWidget(self._pages_widget)
 
     def init_main_window(self):
