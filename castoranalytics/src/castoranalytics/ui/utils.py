@@ -1,3 +1,6 @@
+import os
+import sys
+
 from PySide6.QtWidgets import (
     QWidget, 
     QLabel, 
@@ -10,7 +13,22 @@ from PySide6.QtCore import (
     QEvent,
     QObject,
     QCoreApplication,
+    QSettings,
 )
+
+
+class Settings(QSettings):
+    def __init__(self):
+        super(Settings, self).__init__(QSettings.IniFormat, QSettings.UserScope, 'com.rbeesoft', 'castoranalytics')
+
+    def get(self, name, default=None):
+        value = self.value(name)
+        if value is None or value == '':
+            return default
+        return value
+
+    def set(self, name, value):
+        self.setValue(name, value)
 
 
 class FunctionEvent(QEvent):
@@ -21,6 +39,10 @@ class FunctionEvent(QEvent):
         self.func = func
         self.args = args
         self.kwargs = kwargs
+
+
+def is_macos():
+    return sys.platform.startswith('darwin')
 
 
 class EventDispatcher(QObject):
@@ -38,6 +60,14 @@ def to_main_thread(func):
     def wrapper(*args, **kwargs):
         QCoreApplication.postEvent(_dispatcher, FunctionEvent(func, *args, **kwargs))
     return wrapper
+
+
+def resource_path(relative_path):
+    try:
+        base_path = sys._MEIPASS
+    except AttributeError:
+        base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
+    return os.path.join(base_path, relative_path)
 
 
 class BusyOverlay(QWidget):

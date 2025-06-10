@@ -1,20 +1,15 @@
 from PySide6.QtWidgets import QStackedWidget
 
-from castoranalytics.ui.route import Route
-from castoranalytics.ui.crumbs import Crumbs
+from castoranalytics.ui.pages.route import Route
 
 
 class Router(QStackedWidget):
     def __init__(self):
         super(Router, self).__init__()
-        self._crumbs = Crumbs()
         self._pages = {}
         self._routes = []
         self._prev_path = None
         self._curr_path = None
-
-    def crumbs(self):
-        return self._crumbs
 
     def add_page(self, page, path_pattern):
         route = Route(page, path_pattern)
@@ -33,5 +28,4 @@ class Router(QStackedWidget):
                     self._prev_path = self._curr_path
                     self._curr_path = path
                     self.setCurrentWidget(route.get_page())
-                    self._crumbs.update(self._curr_path)
                     route.get_page().on_navigate(params)

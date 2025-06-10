@@ -1,52 +1,52 @@
 from PySide6.QtWidgets import (
     QWidget,
-    QPushButton,
     QVBoxLayout,
     QLabel,
 )
 from PySide6.QtCore import Qt
 
-from castoranalytics.ui.settings import Settings
+import castoranalytics.ui.constants as constants
+
 from castoranalytics.core import Core
 from castoranalytics.core.logging import LogManager
-from castoranalytics.ui.utils import to_main_thread, BusyOverlay
+from castoranalytics.ui.utils import to_main_thread, BusyOverlay, Settings
 
 LOG = LogManager()
-
-API_SETTINGS_ERROR_MESSAGE = 'It looks like your API settings are incomplete. Please go to settings.'
 
 
 class BasePage(QWidget):
     def __init__(self, name):
         super(BasePage, self).__init__()
         self._name = name
-        self._router = None
         self._settings = Settings()
-        self._error_label = None
-        self._busy_overlay = None
-        self._page_layout = None
-        self._core = None
-        self.init_internal()
-
-    def init_internal(self):
-        self._error_label = QLabel()
-        if not self.get_core().ready():
-            self._error_label.setText(API_SETTINGS_ERROR_MESSAGE)
         self._busy_overlay = BusyOverlay(self)
-        self._page_layout = QVBoxLayout(self)
-        self._page_layout.setAlignment(Qt.AlignmentFlag.AlignTop)
-        self._page_layout.addWidget(self._error_label)
+        self._router = None
+        self._core = None
+        self._error_label = self.init_error_label()
+        self._page_layout = self.init_page_layout(self._error_label)
         self.setLayout(self._page_layout)
+
+    def init_error_label(self):
+        label = QLabel()
+        if not self.get_core().ready():
+            label.setText(constants.CASTOR_ANALYTICS_API_SETTINGS_ERROR_MESSAGE)
+        return label
+    
+    def init_page_layout(self, error_label):
+        layout = QVBoxLayout(self)
+        layout.setAlignment(Qt.AlignmentFlag.AlignTop)
+        layout.addWidget(error_label)
+        return layout
 
     def get_core(self):
         if self._core is None:
             self._core = Core()
         if not self._core.ready():
             self._core.update_settings(
-                self.get_setting('castoranalytics.client_id', None),
-                self.get_setting('castoranalytics.client_secret', None),
-                self.get_setting('castoranalytics.token_url', None),
-                self.get_setting('castoranalytics.api_base_url', None),
+                self.get_setting(constants.CASTOR_ANALYTICS_SETTINGS_KEY_CLIENT_ID, None),
+                self.get_setting(constants.CASTOR_ANALYTICS_SETTINGS_KEY_CLIENT_SECRET, None),
+                self.get_setting(constants.CASTOR_ANALYTICS_SETTINGS_KEY_TOKEN_URL, None),
+                self.get_setting(constants.CASTOR_ANALYTICS_SETTINGS_KEY_API_BASE_URL, None),
             )
         return self._core
 
@@ -59,19 +59,19 @@ class BasePage(QWidget):
             if self.get_core().ready():
                 func = getattr(self.get_core(), func_name)
                 self._busy_overlay.show_overlay()
-                func(to_main_thread(self.on_data_ready_internal), *args, **kwargs)
+                func(to_main_thread(self._on_data_ready), *args, **kwargs)
             else:
-                self._error_label.setText(API_SETTINGS_ERROR_MESSAGE)
+                self._error_label.setText(constants.CASTOR_ANALYTICS_API_SETTINGS_ERROR_MESSAGE)
         except Exception as e:
             self._busy_overlay.hide_overlay()
             LOG.error(e)
 
-    def on_data_ready_internal(self, result, error):
+    def _on_data_ready(self, result, error):
         self.on_data_ready(result, error)
         self._busy_overlay.hide_overlay()
 
     def on_data_ready(self, result, error):
-        raise NotImplementedError('Must be implemented in child class')
+        raise NotImplementedError()
 
     def set_router(self, router):
         self._router = router
@@ -91,7 +91,7 @@ class BasePage(QWidget):
         self._settings.set(name, value)
 
     def on_navigate(self, params):
-        pass
+        raise NotImplementedError()
 
     def handle_go_to_settings(self):
         self.navigate('/settings')

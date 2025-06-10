@@ -1,5 +1,4 @@
 import os
-import sys
 
 from PySide6.QtWidgets import (
     QMainWindow,
@@ -19,33 +18,17 @@ from PySide6.QtGui import (
 )
 from PySide6.QtCore import Qt
 
-from castoranalytics.ui.router import Router
+import castoranalytics.ui.constants as constants
+
+from castoranalytics.ui.pages.router import Router
 from castoranalytics.ui.pages.studylistpage import StudyListPage
 from castoranalytics.ui.pages.studypage import StudyPage
 from castoranalytics.ui.pages.studysitelistpage import StudySiteListPage
 from castoranalytics.ui.pages.settingspage import SettingsPage
-from castoranalytics.ui.utils import Label
+from castoranalytics.ui.utils import Label, resource_path
 from castoranalytics.core.logging import LogManager
 
-CASTOR_ANALYTICS_WINDOW_TITLE = 'Castor Analytics'
-CASTOR_ANALYTICS_WINDOW_W = 1024
-CASTOR_ANALYTICS_WINDOW_H = 600
-CASTOR_ANALYTICS_RESOURCES_DIR = 'castoranalytics/resources'
-CASTOR_ANALYTICS_RESOURCES_IMAGES_DIR = 'castoranalytics/resources/images'
-CASTOR_ANALYTICS_RESOURCES_IMAGES_ICONS_DIR = 'castoranalytics/resources/images/icons'
-CASTOR_ANALYTICS_RESOURCES_ICON = 'castoranalytics.icns' if sys.platform.startswith('darwin') else 'castoranalytics.ico'
-CASTOR_ANALYTICS_RESOURCES_BACKGROUND_IMAGE = 'home.png'
-CASTOR_ANALYTICS_RESOURCES_BACKGROUND_IMAGE_OPACITY = 0.25
-
 LOG = LogManager()
-
-
-def resource_path(relative_path):
-    try:
-        base_path = sys._MEIPASS
-    except AttributeError:
-        base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
-    return os.path.join(base_path, relative_path)
 
 
 class MainWindow(QMainWindow):
@@ -76,7 +59,7 @@ class MainWindow(QMainWindow):
         self.init_main_window()
 
     def init_version(self):
-        with open(resource_path(os.path.join(CASTOR_ANALYTICS_RESOURCES_DIR, 'VERSION')), 'r') as f:
+        with open(resource_path(os.path.join(constants.CASTOR_ANALYTICS_RESOURCES_DIR, 'VERSION')), 'r') as f:
             self._version = f.readline().strip()
 
     def init_background(self):
@@ -85,8 +68,9 @@ class MainWindow(QMainWindow):
         self._background_label.setAlignment(Qt.AlignCenter)
         self._background_label.setScaledContents(True)
         self._background_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        image_path = resource_path(os.path.join(CASTOR_ANALYTICS_RESOURCES_IMAGES_DIR, CASTOR_ANALYTICS_RESOURCES_BACKGROUND_IMAGE))
-        self._background_label.setPixmap(self.apply_opacity_to_pixmap(QPixmap(image_path), CASTOR_ANALYTICS_RESOURCES_BACKGROUND_IMAGE_OPACITY))
+        image_path = resource_path(os.path.join(
+            constants.CASTOR_ANALYTICS_RESOURCES_IMAGES_DIR, constants.CASTOR_ANALYTICS_RESOURCES_BACKGROUND_IMAGE))
+        self._background_label.setPixmap(self.apply_opacity_to_pixmap(QPixmap(image_path), constants.CASTOR_ANALYTICS_RESOURCES_BACKGROUND_IMAGE_OPACITY))
         self._background_label.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True) # should not handle events!
 
     def init_menus(self):
@@ -100,7 +84,7 @@ class MainWindow(QMainWindow):
 
     def init_pages(self):
         LOG.info('Initializing pages...')
-        self._app_label = Label(CASTOR_ANALYTICS_WINDOW_TITLE + f' {self._version}', type=Label.HEADING1)
+        self._app_label = Label(constants.CASTOR_ANALYTICS_WINDOW_TITLE + f' {self._version}', type=Label.HEADING1)
         self._app_label.setAlignment(Qt.AlignCenter)
         self._router = Router()
         self._router.add_page(StudyListPage(), '/studies')
@@ -122,10 +106,11 @@ class MainWindow(QMainWindow):
         LOG.info('Initializing main window...')
         self._central_widget = QWidget()
         self._central_widget.setLayout(self._pages_widget_layout)
-        self.setWindowTitle(CASTOR_ANALYTICS_WINDOW_TITLE + f' {self._version}')
-        self.setWindowIcon(QIcon(resource_path(os.path.join(CASTOR_ANALYTICS_RESOURCES_IMAGES_ICONS_DIR, CASTOR_ANALYTICS_RESOURCES_ICON))))
+        self.setWindowTitle(constants.CASTOR_ANALYTICS_WINDOW_TITLE + f' {self._version}')
+        self.setWindowIcon(QIcon(resource_path(os.path.join(
+            constants.CASTOR_ANALYTICS_RESOURCES_IMAGES_ICONS_DIR, constants.CASTOR_ANALYTICS_RESOURCES_ICON))))
         self.setCentralWidget(self._central_widget)
-        self.resize(CASTOR_ANALYTICS_WINDOW_W, CASTOR_ANALYTICS_WINDOW_H)
+        self.resize(constants.CASTOR_ANALYTICS_WINDOW_W, constants.CASTOR_ANALYTICS_WINDOW_H)
         self.center_window()
         self.show()
 
@@ -137,7 +122,7 @@ class MainWindow(QMainWindow):
                 self._background_label.size(), aspectMode=Qt.AspectRatioMode.IgnoreAspectRatio, mode=Qt.TransformationMode.SmoothTransformation)
             self._background_label.setPixmap(
                 self.apply_opacity_to_pixmap(
-                    scaled_pixmap, CASTOR_ANALYTICS_RESOURCES_BACKGROUND_IMAGE_OPACITY))
+                    scaled_pixmap, constants.CASTOR_ANALYTICS_RESOURCES_BACKGROUND_IMAGE_OPACITY))
         return super().resizeEvent(event)
 
     def handle_open_settings_page(self):
