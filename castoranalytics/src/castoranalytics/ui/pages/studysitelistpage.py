@@ -16,33 +16,42 @@ LOG = LogManager()
 class StudySiteListPage(BasePage):
     def __init__(self):
         super(StudySiteListPage, self).__init__(name='Studies sites')
-        self._study_site_list_label = None
         self._study_id = None
-        self._table_widget = None
-        self.init()
-
-    def init(self):
-        self._study_site_list_label = Label('Study sites', type=Label.HEADING1)
-        self._table_widget = QTableWidget()
-        self._table_widget.setSortingEnabled(True)
-        self._table_widget.horizontalHeader().setVisible(False)
-        self._table_widget.verticalHeader().setVisible(False)
-        self._table_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self._table_widget.itemClicked.connect(self.handle_study_site_selected)
+        self._study_site_list_label = self.init_study_site_list_label()
+        self._table_widget = self.init_table_widget()
         self.get_layout().addWidget(self._study_site_list_label)
         self.get_layout().addWidget(self._table_widget)
 
-    def handle_study_site_selected(self, item):
+    def init_study_site_list_label(self):
+        label = Label('', type=Label.HEADING1)
+        return label
+    
+    def init_table_widget(self):
+        widget = QTableWidget()
+        widget.setSortingEnabled(True)
+        widget.horizontalHeader().setVisible(False)
+        widget.verticalHeader().setVisible(False)
+        widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        widget.itemClicked.connect(self.on_study_site_selected)
+        return widget
+
+    def on_study_site_selected(self, item):
         # self.navigate(f'/studies/{item.data(Qt.UserRole).get_id()}')
         pass
 
     def on_navigate(self, params):
+        self._study_site_list_label.setText('')
         self._table_widget.clearContents()
         self._study_id = params.get('study_id', None)
         if self._study_id:
-            self.load_data('get_study_sites', self._study_id)
+            # self.load_data('get_study_sites', self._study_id)
+            pass
     
     def on_data_ready(self, study_sites, error):
+        if error:
+            self._study_site_list_label.setText(error)
+        else:
+            self._study_site_list_label.setText('Study sites')
         self._table_widget.setRowCount(len(study_sites))
         self._table_widget.setColumnCount(4)
         for row, study_site in enumerate(study_sites):
