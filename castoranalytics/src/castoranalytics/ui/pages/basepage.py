@@ -59,14 +59,14 @@ class BasePage(QWidget):
             if self.get_core().ready():
                 func = getattr(self.get_core(), func_name)
                 self._busy_overlay.show_overlay()
-                func(to_main_thread(self._on_data_ready), *args, **kwargs)
+                func(to_main_thread(self.on_data_ready_internal), *args, **kwargs)
             else:
                 self._error_label.setText(constants.CASTOR_ANALYTICS_API_SETTINGS_ERROR_MESSAGE)
         except Exception as e:
             self._busy_overlay.hide_overlay()
             LOG.error(e)
 
-    def _on_data_ready(self, result, error):
+    def on_data_ready_internal(self, result, error):
         self.on_data_ready(result, error)
         self._busy_overlay.hide_overlay()
 
@@ -92,6 +92,3 @@ class BasePage(QWidget):
 
     def on_navigate(self, params):
         raise NotImplementedError()
-
-    def handle_go_to_settings(self):
-        self.navigate('/settings')

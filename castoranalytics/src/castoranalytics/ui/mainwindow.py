@@ -34,82 +34,73 @@ LOG = LogManager()
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        self._version = None
-        self._central_widget = None
-        self._central_layout = None
-        self._background_label = None
+        self._version = self.init_version()
+        self._app_label_text = constants.CASTOR_ANALYTICS_WINDOW_TITLE + f' {self._version}'
+        self._background_label = self.init_background_label()
         self._background_label_pixmap = None
-        self._router = None
-        self._app_label = None
-        self._file_menu = None
-        self._file_menu_settings_action = None
-        self._file_menu_exit_action = None
-        self._pages_widget = None
-        self._pages_widget_layout = None
-        self._crumbs = None
-        self.init()
+        self._router = self.init_router()
+        self._file_menu = self.init_file_menu()
+        self._page_layout = self.init_page_layout(self._app_label_text, self._background_label, self._router)
+        self.init_main_window(self._app_label_text, self._page_layout)
 
     # INITIALIZATION
 
-    def init(self):
-        self.init_version()
-        self.init_background()
-        self.init_menus()
-        self.init_pages()
-        self.init_main_window()
-
     def init_version(self):
         with open(resource_path(os.path.join(constants.CASTOR_ANALYTICS_RESOURCES_DIR, 'VERSION')), 'r') as f:
-            self._version = f.readline().strip()
+            version = f.readline().strip()
+            return version
 
-    def init_background(self):
-        LOG.info('Initializing background image...')
-        self._background_label = QLabel()
-        self._background_label.setAlignment(Qt.AlignCenter)
-        self._background_label.setScaledContents(True)
-        self._background_label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+    def init_background_label(self):
+        label = QLabel()
+        label.setAlignment(Qt.AlignCenter)
+        label.setScaledContents(True)
+        label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         image_path = resource_path(os.path.join(
             constants.CASTOR_ANALYTICS_RESOURCES_IMAGES_DIR, constants.CASTOR_ANALYTICS_RESOURCES_BACKGROUND_IMAGE))
-        self._background_label.setPixmap(self.apply_opacity_to_pixmap(QPixmap(image_path), constants.CASTOR_ANALYTICS_RESOURCES_BACKGROUND_IMAGE_OPACITY))
-        self._background_label.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True) # should not handle events!
+        label.setPixmap(self.apply_opacity_to_pixmap(QPixmap(image_path), constants.CASTOR_ANALYTICS_RESOURCES_BACKGROUND_IMAGE_OPACITY))
+        label.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True) # should not handle events!
+        return label
 
-    def init_menus(self):
-        self._file_menu = self.menuBar().addMenu('File')
-        self._file_menu_settings_action = QAction('Settings', self)
-        self._file_menu_settings_action.triggered.connect(self.handle_open_settings_page)
-        self._file_menu_exit_action = QAction('Exit', self)
-        self._file_menu_exit_action.triggered.connect(self.close)
-        self._file_menu.addAction(self._file_menu_settings_action)
-        self._file_menu.addAction(self._file_menu_exit_action)
+    def init_router(self):
+        router = Router()
+        router.add_page(StudyListPage(), '/studies')
+        router.add_page(StudyPage(), '/studies/:study_id')
+        router.add_page(StudySiteListPage(), '/studies/:study_id/sites')
+        router.add_page(SettingsPage(), '/settings')
+        router.navigate('/studies')
+        return router
 
-    def init_pages(self):
-        LOG.info('Initializing pages...')
-        self._app_label = Label(constants.CASTOR_ANALYTICS_WINDOW_TITLE + f' {self._version}', type=Label.HEADING1)
-        self._app_label.setAlignment(Qt.AlignCenter)
-        self._router = Router()
-        self._router.add_page(StudyListPage(), '/studies')
-        self._router.add_page(StudyPage(), '/studies/:study_id')
-        self._router.add_page(StudySiteListPage(), '/studies/:study_id/sites')
-        self._router.add_page(SettingsPage(), '/settings')
-        self._router.navigate('/studies')
-        self._pages_widget = QWidget()
-        layout = QStackedLayout(self._pages_widget)
+    def init_file_menu(self):
+        menu = self.menuBar().addMenu('File')
+        menu_settings_action = QAction('Settings', self)
+        menu_settings_action.triggered.connect(self.on_open_settings_page)
+        menu_exit_action = QAction('Exit', self)
+        menu_exit_action.triggered.connect(self.close)
+        menu.addAction(menu_settings_action)
+        menu.addAction(menu_exit_action)
+        return menu
+
+    def init_page_layout(self, app_label_text, background_label, router):
+        app_label = Label(app_label_text, type=Label.HEADING1)
+        app_label.setAlignment(Qt.AlignCenter)
+        page_widget = QWidget()
+        layout = QStackedLayout(page_widget)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setStackingMode(QStackedLayout.StackAll)
-        layout.addWidget(self._background_label)
-        layout.addWidget(self._router)
-        self._pages_widget_layout = QVBoxLayout()
-        self._pages_widget_layout.addWidget(self._app_label)
-        self._pages_widget_layout.addWidget(self._pages_widget)
+        layout.addWidget(background_label)
+        layout.addWidget(router)
+        page_layout = QVBoxLayout()
+        page_layout.addWidget(app_label)
+        page_layout.addWidget(page_widget)
+        return page_layout
 
-    def init_main_window(self):
-        LOG.info('Initializing main window...')
-        self._central_widget = QWidget()
-        self._central_widget.setLayout(self._pages_widget_layout)
-        self.setWindowTitle(constants.CASTOR_ANALYTICS_WINDOW_TITLE + f' {self._version}')
+    def init_main_window(self, app_label_text, page_layout):
+        widget = QWidget()
+        widget.setLayout(page_layout)
+        self.setWindowTitle(app_label_text)
         self.setWindowIcon(QIcon(resource_path(os.path.join(
             constants.CASTOR_ANALYTICS_RESOURCES_IMAGES_ICONS_DIR, constants.CASTOR_ANALYTICS_RESOURCES_ICON))))
-        self.setCentralWidget(self._central_widget)
+        self.setCentralWidget(widget)
         self.resize(constants.CASTOR_ANALYTICS_WINDOW_W, constants.CASTOR_ANALYTICS_WINDOW_H)
         self.center_window()
         self.show()
@@ -125,7 +116,7 @@ class MainWindow(QMainWindow):
                     scaled_pixmap, constants.CASTOR_ANALYTICS_RESOURCES_BACKGROUND_IMAGE_OPACITY))
         return super().resizeEvent(event)
 
-    def handle_open_settings_page(self):
+    def on_open_settings_page(self):
         self._router.navigate('/settings')
 
     # MISCELLANEOUS
