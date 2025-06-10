@@ -7,6 +7,8 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 
+import castoranalytics.ui.constants as constants
+
 from castoranalytics.ui.pages.basepage import BasePage
 from castoranalytics.ui.utils import Label
 from castoranalytics.core.logging import LogManager
@@ -17,41 +19,53 @@ LOG = LogManager()
 class StudyPage(BasePage):
     def __init__(self):
         super(StudyPage, self).__init__(name='Study')
-        self._back_button = None
         self._study_id = None
-        self._study_name_label = None
-        self._table_widget = None
-        self._sites_warning_label = None
-        self._show_sites_button = None
-        self.init()
-
-    def init(self):
-        self._back_button = QPushButton('Back', self)
-        self._back_button.clicked.connect(self.handle_back)
-        self._study_name_label = Label('', type=Label.HEADING1)
-        self._table_widget = QTableWidget()
-        self._table_widget.setSelectionMode(QTableWidget.NoSelection)
-        self._table_widget.horizontalHeader().setVisible(False)
-        self._table_widget.verticalHeader().setVisible(False)
-        self._table_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
-        self._table_widget.setFocusPolicy(Qt.NoFocus)
-        self._sites_warning_label = Label('Your study has >10 sites. Loading these will take some time.', type=Label.HEADING1, style='color: red;')
-        self._sites_warning_label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
-        self._sites_warning_label.setContentsMargins(0, 0, 0, 20)
-        self._sites_warning_label.setVisible(False)
-        self._show_sites_button = QPushButton('Get sites', self)
-        self._show_sites_button.clicked.connect(self.handle_show_sites)
-        self._show_sites_button.setVisible(False)
+        self._back_button = self.init_back_button()
+        self._study_name_label = self.init_study_name_label()
+        self._table_widget = self.init_table_widget()
+        self._sites_warning_label = self.init_sites_warning_label()
+        self._show_sites_button = self.init_show_sites_button()
         self.get_layout().addWidget(self._back_button)
         self.get_layout().addWidget(self._study_name_label)
         self.get_layout().addWidget(self._table_widget)
         self.get_layout().addWidget(self._sites_warning_label)
         self.get_layout().addWidget(self._show_sites_button)
 
-    def handle_back(self):
+    def init_back_button(self):
+        button = QPushButton('Back', self)
+        button.clicked.connect(self.on_back)
+        return button
+    
+    def init_table_widget(self):
+        widget = QTableWidget()
+        widget.setSelectionMode(QTableWidget.NoSelection)
+        widget.horizontalHeader().setVisible(False)
+        widget.verticalHeader().setVisible(False)
+        widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Minimum)
+        widget.setFocusPolicy(Qt.NoFocus)
+        return widget
+    
+    def init_study_name_label(self):
+        label = Label('', type=Label.HEADING1)
+        return label
+    
+    def init_sites_warning_label(self):
+        label = Label(constants.CASTOR_ANALYTICS_STUDY_SITES_WARNING, type=Label.HEADING1, style='color: red;')
+        label.setAlignment(Qt.AlignmentFlag.AlignHCenter)
+        label.setContentsMargins(0, 0, 0, 20)
+        label.setVisible(False)
+        return label
+    
+    def init_show_sites_button(self):
+        button = QPushButton('Get sites', self)
+        button.clicked.connect(self.on_show_sites)
+        button.setVisible(False)
+        return button
+
+    def on_back(self):
         self.back()
 
-    def handle_show_sites(self):
+    def on_show_sites(self):
         self.navigate(f'/studies/{self._study_id}/sites')
 
     def on_navigate(self, params):

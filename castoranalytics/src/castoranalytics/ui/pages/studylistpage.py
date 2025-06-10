@@ -16,22 +16,20 @@ LOG = LogManager()
 class StudyListPage(BasePage):
     def __init__(self):
         super(StudyListPage, self).__init__(name='Studies')
-        self._study_list_label = None
-        self._table_widget = None
-        self.init()
-
-    def init(self):
-        self._study_list_label = Label('Studies', type=Label.HEADING1)
-        self._table_widget = QTableWidget()
-        self._table_widget.setSortingEnabled(True)
-        self._table_widget.horizontalHeader().setVisible(False)
-        self._table_widget.verticalHeader().setVisible(False)
-        self._table_widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        self._table_widget.itemClicked.connect(self.handle_study_selected)
-        self.get_layout().addWidget(self._study_list_label)
+        self._table_widget = self.init_table_widget()
+        self.get_layout().addWidget(Label('Studies', type=Label.HEADING1))
         self.get_layout().addWidget(self._table_widget)
 
-    def handle_study_selected(self, item):
+    def init_table_widget(self):
+        widget = QTableWidget()
+        widget.setSortingEnabled(True)
+        widget.horizontalHeader().setVisible(False)
+        widget.verticalHeader().setVisible(False)
+        widget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        widget.itemClicked.connect(self.on_study_selected)
+        return widget
+
+    def on_study_selected(self, item):
         self.navigate(f'/studies/{item.data(Qt.UserRole).get_id()}')
 
     def on_data_ready(self, studies, error):
