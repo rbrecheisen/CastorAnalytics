@@ -75,3 +75,10 @@ def test_get_study(client_id, client_secret, token_url, api_base_url):
     assert isinstance(study.get_nr_participants(), int)
     assert study.get_nr_fields() > 0
     assert isinstance(study.get_nr_fields(), int)
+
+
+def test_get_study_sites(client_id, client_secret, token_url, api_base_url):
+    core = Core()
+    core.update_settings(client_id, client_secret, token_url, api_base_url)
+    assert core is not None
+    study_sites = core.get_study_sites(study_id=STUDY_ID)
