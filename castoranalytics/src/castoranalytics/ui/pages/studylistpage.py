@@ -16,10 +16,15 @@ LOG = LogManager()
 class StudyListPage(BasePage):
     def __init__(self):
         super(StudyListPage, self).__init__(name='Studies')
+        self._study_list_label = self.init_study_list_label()
         self._table_widget = self.init_table_widget()
         self.init_page_layout()
 
     # INITIALIZATION
+
+    def init_study_list_label(self):
+        label = Label('Studies', type=Label.HEADING1)
+        return label
 
     def init_table_widget(self):
         widget = QTableWidget()
@@ -35,6 +40,12 @@ class StudyListPage(BasePage):
         self.get_layout().addWidget(self._table_widget)
 
     # TABLE
+
+    def update_study_list_label(self, studies, error):
+        if error:
+            self._study_list_label.setText(error)
+        else:
+            self._study_list_label.setText('Studies')
 
     def update_table_widget(self, studies):
         self._table_widget.setRowCount(len(studies))
@@ -55,6 +66,8 @@ class StudyListPage(BasePage):
         self.navigate(f'/studies/{item.data(Qt.UserRole).get_id()}')
 
     def on_data_ready(self, studies, error):
+        if error:
+            self._study_list_label.setText(error)
         self.update_table_widget(studies)
 
     def on_navigate(self, params):
