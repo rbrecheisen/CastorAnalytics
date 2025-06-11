@@ -17,8 +17,9 @@ class StudyListPage(BasePage):
     def __init__(self):
         super(StudyListPage, self).__init__(name='Studies')
         self._table_widget = self.init_table_widget()
-        self.get_layout().addWidget(Label('Studies', type=Label.HEADING1))
-        self.get_layout().addWidget(self._table_widget)
+        self.init_page_layout()
+
+    # INITIALIZATION
 
     def init_table_widget(self):
         widget = QTableWidget()
@@ -29,10 +30,13 @@ class StudyListPage(BasePage):
         widget.itemClicked.connect(self.on_study_selected)
         return widget
 
-    def on_study_selected(self, item):
-        self.navigate(f'/studies/{item.data(Qt.UserRole).get_id()}')
+    def init_page_layout(self):
+        self.get_layout().addWidget(Label('Studies', type=Label.HEADING1))
+        self.get_layout().addWidget(self._table_widget)
 
-    def on_data_ready(self, studies, error):
+    # TABLE
+
+    def update_table_widget(self, studies):
         self._table_widget.setRowCount(len(studies))
         self._table_widget.setColumnCount(1)
         for row, study in enumerate(studies):
@@ -44,6 +48,14 @@ class StudyListPage(BasePage):
         self._table_widget.sortItems(0, Qt.AscendingOrder)
         self._table_widget.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
         self._table_widget.horizontalHeader().setDefaultAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+
+    # EVENT HANDLERS
+
+    def on_study_selected(self, item):
+        self.navigate(f'/studies/{item.data(Qt.UserRole).get_id()}')
+
+    def on_data_ready(self, studies, error):
+        self.update_table_widget()
 
     def on_navigate(self, params):
         self._table_widget.clearContents()

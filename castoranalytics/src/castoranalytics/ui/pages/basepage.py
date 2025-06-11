@@ -23,7 +23,7 @@ class BasePage(QWidget):
         self._router = None
         self._core = None
         self._error_label = self.init_error_label()
-        self._page_layout = self.init_page_layout(self._error_label)
+        self._page_layout = self.init_page_layout_internal(self._error_label)
         self.setLayout(self._page_layout)
 
     def init_error_label(self):
@@ -32,7 +32,7 @@ class BasePage(QWidget):
             label.setText(constants.CASTOR_ANALYTICS_API_SETTINGS_ERROR_MESSAGE)
         return label
     
-    def init_page_layout(self, error_label):
+    def init_page_layout_internal(self, error_label):
         layout = QVBoxLayout(self)
         layout.setAlignment(Qt.AlignmentFlag.AlignTop)
         layout.addWidget(error_label)

@@ -25,11 +25,9 @@ class StudyPage(BasePage):
         self._table_widget = self.init_table_widget()
         self._sites_warning_label = self.init_sites_warning_label()
         self._show_sites_button = self.init_show_sites_button()
-        self.get_layout().addWidget(self._back_button)
-        self.get_layout().addWidget(self._study_name_label)
-        self.get_layout().addWidget(self._table_widget)
-        self.get_layout().addWidget(self._sites_warning_label)
-        self.get_layout().addWidget(self._show_sites_button)
+        self.init_page_layout()
+
+    # INITIALIZATION
 
     def init_back_button(self):
         button = QPushButton('Back', self)
@@ -62,26 +60,22 @@ class StudyPage(BasePage):
         button.setVisible(False)
         return button
 
-    def on_back(self):
-        self.back()
+    def init_page_layout(self):
+        self.get_layout().addWidget(self._back_button)
+        self.get_layout().addWidget(self._study_name_label)
+        self.get_layout().addWidget(self._table_widget)
+        self.get_layout().addWidget(self._sites_warning_label)
+        self.get_layout().addWidget(self._show_sites_button)
 
-    def on_show_sites(self):
-        self.navigate(f'/studies/{self._study_id}/sites')
+    # TABLE
 
-    def on_navigate(self, params):
-        self._study_name_label.setText('')
-        self._table_widget.clearContents()
-        self._sites_warning_label.setVisible(False)
-        self._show_sites_button.setVisible(False)
-        self._study_id = params.get('study_id', None)
-        if self._study_id:
-            self.load_data('get_study', self._study_id)
-
-    def on_data_ready(self, study, error):
+    def update_study_name_label(self, study, error):
         if error:
             self._study_name_label.setText(error)
             return
         self._study_name_label.setText(study.get_name())
+
+    def update_table_widget(self, study)
         self._table_widget.setRowCount(5)
         self._table_widget.setColumnCount(2)
         self._table_widget.setItem(0, 0, QTableWidgetItem('Study ID'))
@@ -98,6 +92,30 @@ class StudyPage(BasePage):
         self._table_widget.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
         self._table_widget.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
         self._table_widget.horizontalHeader().setDefaultAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+
+    def show_sites_button(self, study):
         if study.get_nr_sites() > 10:
             self._sites_warning_label.setVisible(True)
         self._show_sites_button.setVisible(True)
+        
+    # EVENT HANDLERS
+
+    def on_back(self):
+        self.back()
+
+    def on_show_sites(self):
+        self.navigate(f'/studies/{self._study_id}/sites')
+
+    def on_navigate(self, params):
+        self._study_name_label.setText('')
+        self._table_widget.clearContents()
+        self._sites_warning_label.setVisible(False)
+        self._show_sites_button.setVisible(False)
+        self._study_id = params.get('study_id', None)
+        if self._study_id:
+            self.load_data('get_study', self._study_id)
+
+    def on_data_ready(self, study, error):
+        self.update_study_name_label(study, error)
+        self.update_table_widget(study)
+        self.show_sites_button(study)
