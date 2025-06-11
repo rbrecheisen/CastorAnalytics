@@ -55,7 +55,7 @@ class StudyListPage(BasePage):
         self.navigate(f'/studies/{item.data(Qt.UserRole).get_id()}')
 
     def on_data_ready(self, studies, error):
-        self.update_table_widget()
+        self.update_table_widget(studies)
 
     def on_navigate(self, params):
         self._table_widget.clearContents()

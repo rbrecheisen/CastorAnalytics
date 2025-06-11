@@ -75,7 +75,7 @@ class StudyPage(BasePage):
             return
         self._study_name_label.setText(study.get_name())
 
-    def update_table_widget(self, study)
+    def update_table_widget(self, study):
         self._table_widget.setRowCount(5)
         self._table_widget.setColumnCount(2)
         self._table_widget.setItem(0, 0, QTableWidgetItem('Study ID'))

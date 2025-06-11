@@ -73,9 +73,9 @@ class StudySiteListPage(BasePage):
         self._table_widget.clearContents()
         self._study_id = params.get('study_id', None)
         if self._study_id:
-            # self.load_data('get_study_sites', self._study_id)
-            pass
+            self.load_data('get_study_sites', self._study_id)
     
     def on_data_ready(self, study_sites, error):
-        self.update_study_site_list_label(error)
-        self.update_table_widget(study_sites)
+        # self.update_study_site_list_label(error)
+        # self.update_table_widget(study_sites)
+        pass
