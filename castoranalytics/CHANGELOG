@@ -1,5 +1,10 @@
 # Castor Analytics Release Notes
 
-## 0.1 (03-06-2025)
+## 1.0 (13-06-2025)
 
 * Initial release
+* View study list
+* View study
+* View study sites
+* Settings for API credentials
+* Caching
