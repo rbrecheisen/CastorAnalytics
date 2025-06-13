@@ -2,6 +2,7 @@ import pytest
 
 from castoranalytics.core import Core
 from castoranalytics.core.api.study import Study
+from castoranalytics.core.api.studysite import StudySite
 from castoranalytics.core.api.studydetails import StudyDetails
 from castoranalytics.core.api.country import Country
 
@@ -31,24 +32,32 @@ def api_base_url():
 
 
 def test_get_countries(client_id, client_secret, token_url, api_base_url):
-    core = Core()
-    core.update_settings(client_id, client_secret, token_url, api_base_url)
+    core = Core(client_id, client_secret, token_url, api_base_url)
     assert core is not None
     countries = core.get_countries()
     assert len(countries) > 0
     assert isinstance(countries, list)
     for country in countries:
         assert isinstance(country, Country)
-        assert isinstance(country.get_id(), str)
+        assert isinstance(country.get_id(), int)
         assert isinstance(country.get_name(), str)
         assert isinstance(country.get_tld_code(), str)
         assert isinstance(country.get_two_digit_code(), str)
         assert isinstance(country.get_three_digit_code(), str)
-    
+
+
+def test_get_country_codes(client_id, client_secret, token_url, api_base_url):
+    core = Core(client_id, client_secret, token_url, api_base_url)
+    assert core is not None
+    countries = core.get_countries()
+    country_codes = core.get_country_codes()
+    for country in countries:
+        three_digit_code = country_codes.get_three_digit_code_for(country.get_id())
+        assert three_digit_code == country.get_three_digit_code()
+
 
 def test_get_studies(client_id, client_secret, token_url, api_base_url):
-    core = Core()
-    core.update_settings(client_id, client_secret, token_url, api_base_url)
+    core = Core(client_id, client_secret, token_url, api_base_url)
     assert core is not None
     studies = core.get_studies()
     assert len(studies) > 0
@@ -61,8 +70,7 @@ def test_get_studies(client_id, client_secret, token_url, api_base_url):
 
 
 def test_get_study(client_id, client_secret, token_url, api_base_url):
-    core = Core()
-    core.update_settings(client_id, client_secret, token_url, api_base_url)
+    core = Core(client_id, client_secret, token_url, api_base_url)
     assert core is not None
     study = core.get_study(study_id=STUDY_ID)
     assert isinstance(study, StudyDetails)
@@ -78,7 +86,15 @@ def test_get_study(client_id, client_secret, token_url, api_base_url):
 
 
 def test_get_study_sites(client_id, client_secret, token_url, api_base_url):
-    core = Core()
-    core.update_settings(client_id, client_secret, token_url, api_base_url)
+    core = Core(client_id, client_secret, token_url, api_base_url)
     assert core is not None
     study_sites = core.get_study_sites(study_id=STUDY_ID)
+    assert len(study_sites) > 0
+    assert isinstance(study_sites, list)
+    for study_site in study_sites:
+        assert isinstance(study_site, StudySite)
+        assert isinstance(study_site.get_id(), str)
+        assert isinstance(study_site.get_abbreviation(), str)
+        assert isinstance(study_site.get_country_id(), int)
+        assert isinstance(study_site.get_nr_records(), int)
+        assert isinstance(study_site.get_completion_rate(), float)

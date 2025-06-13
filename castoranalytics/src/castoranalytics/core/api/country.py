@@ -3,7 +3,7 @@ class Country:
         self._country_data = country_data
 
     def get_id(self):
-        return self._country_data['country_id']
+        return int(self._country_data['country_id'])
     
     def get_name(self):
         return self._country_data['country_name']

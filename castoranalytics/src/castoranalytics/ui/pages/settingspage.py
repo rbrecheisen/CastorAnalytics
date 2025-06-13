@@ -78,14 +78,15 @@ class SettingsPage(BasePage):
         self.back()
 
     def on_save(self):
-        self._settings.setValue(
-            constants.CASTOR_ANALYTICS_SETTINGS_KEY_CLIENT_ID, self._client_id_field.text())
-        self._settings.setValue(
-            constants.CASTOR_ANALYTICS_SETTINGS_KEY_CLIENT_SECRET, self._client_secret_field.text())
-        self._settings.setValue(
-            constants.CASTOR_ANALYTICS_SETTINGS_KEY_TOKEN_URL, self._token_url_field.text())
-        self._settings.setValue(
-            constants.CASTOR_ANALYTICS_SETTINGS_KEY_API_BASE_URL, self._api_base_url_field.text())
+        client_id = self._client_id_field.text()
+        client_secret = self._client_secret_field.text()
+        token_url = self._token_url_field.text()
+        api_base_url = self._api_base_url_field.text()
+        self._settings.setValue(constants.CASTOR_ANALYTICS_SETTINGS_KEY_CLIENT_ID, client_id)
+        self._settings.setValue(constants.CASTOR_ANALYTICS_SETTINGS_KEY_CLIENT_SECRET, client_secret)
+        self._settings.setValue(constants.CASTOR_ANALYTICS_SETTINGS_KEY_TOKEN_URL, token_url)
+        self._settings.setValue(constants.CASTOR_ANALYTICS_SETTINGS_KEY_API_BASE_URL, api_base_url)
+        self.get_core().set_api_credentials(client_id, client_secret, token_url, api_base_url)
         self.back()
 
     def on_navigate(self, params):

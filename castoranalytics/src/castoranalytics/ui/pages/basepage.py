@@ -21,7 +21,7 @@ class BasePage(QWidget):
         self._settings = Settings()
         self._busy_overlay = BusyOverlay(self)
         self._router = None
-        self._core = None
+        self._core = self.init_core()
         self._error_label = self.init_error_label()
         self._page_layout = self.init_page_layout_internal(self._error_label)
         self.setLayout(self._page_layout)
@@ -38,16 +38,16 @@ class BasePage(QWidget):
         layout.addWidget(error_label)
         return layout
 
+    def init_core(self):
+        self._core = Core(
+            self.get_setting(constants.CASTOR_ANALYTICS_SETTINGS_KEY_CLIENT_ID, None),
+            self.get_setting(constants.CASTOR_ANALYTICS_SETTINGS_KEY_CLIENT_SECRET, None),
+            self.get_setting(constants.CASTOR_ANALYTICS_SETTINGS_KEY_TOKEN_URL, None),
+            self.get_setting(constants.CASTOR_ANALYTICS_SETTINGS_KEY_API_BASE_URL, None),
+        )
+        return self._core
+    
     def get_core(self):
-        if self._core is None:
-            self._core = Core()
-        if not self._core.ready():
-            self._core.update_settings(
-                self.get_setting(constants.CASTOR_ANALYTICS_SETTINGS_KEY_CLIENT_ID, None),
-                self.get_setting(constants.CASTOR_ANALYTICS_SETTINGS_KEY_CLIENT_SECRET, None),
-                self.get_setting(constants.CASTOR_ANALYTICS_SETTINGS_KEY_TOKEN_URL, None),
-                self.get_setting(constants.CASTOR_ANALYTICS_SETTINGS_KEY_API_BASE_URL, None),
-            )
         return self._core
 
     def get_layout(self):
@@ -60,6 +60,7 @@ class BasePage(QWidget):
                 func = getattr(self.get_core(), func_name)
                 self._busy_overlay.show_overlay()
                 func(to_main_thread(self.on_data_ready_internal), *args, **kwargs)
+                self._error_label.setText('')
             else:
                 self._error_label.setText(constants.CASTOR_ANALYTICS_API_SETTINGS_ERROR_MESSAGE)
         except Exception as e:

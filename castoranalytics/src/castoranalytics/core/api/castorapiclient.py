@@ -62,6 +62,8 @@ class CastorApiClient:
         response_data = response.json()
         return response_data
     
+    # SITES
+    
     def get_number_of_sites(self, study_id):
         response = self._session.get(f'{self._api_url}/study/{study_id}/site?page=1')
         response.raise_for_status()
@@ -71,19 +73,30 @@ class CastorApiClient:
     def get_study_sites(self, study_id):
         study_sites, current_page = [], 1
         while True:
-            response = self._session.get(f'{self._api_url}/study/{study_id}/site?page={current_page}')
-            response.raise_for_status()
-            response_data = response.json()
-            new_sites = response_data.get('_embedded', {}).get('sites', [])
+            new_sites, page_count = self.get_study_sites_by_page(study_id, current_page)
             if not new_sites:
                 break
             study_sites.extend(new_sites)
-            if current_page >= response_data.get('page_count', 1):
+            if current_page >= page_count:
                 break
             current_page += 1
         # for item in study_sites:
         #     print(item)
         return study_sites
+    
+    def get_study_sites_by_page(self, study_id, page):
+        response = self._session.get(f'{self._api_url}/study/{study_id}/site?page={page}')
+        response.raise_for_status()
+        response_data = response.json()
+        sites = response_data.get('_embedded', {}).get('sites', [])
+        page_count = response_data.get('page_count', 1)
+        return sites, page_count
+    
+    def get_study_site(self, study_id, site_id):
+        response = self._session.get(f'{self._api_url}/study/{study_id}/site/{site_id}')
+        response.raise_for_status()
+        response_data = response.json()
+        return response_data
 
     def get_statistics(self, study_id):
         response = self._session.get(f'{self._api_url}/study/{study_id}/statistics')
@@ -96,32 +109,44 @@ class CastorApiClient:
     def get_participants(self, study_id):
         participants, current_page = [], 1
         while True:
-            response = self._session.get(f'{self._api_url}/study/{study_id}/participant?page={current_page}')
-            response.raise_for_status()
-            response_data = response.json()
-            new_participants = response_data.get('_embedded', {}).get('participants', [])
+            new_participants, page_count = self.get_participants_by_page(study_id, current_page)
             if not new_participants:
                 break
             participants.extend(new_participants)
-            if current_page >= response_data.get('page_count', 1):
+            if current_page >= page_count:
                 break
             current_page += 1
         return participants
+    
+    def get_participants_by_page(self, study_id, page):
+        response = self._session.get(f'{self._api_url}/study/{study_id}/participant?page={page}')
+        response.raise_for_status()
+        response_data = response.json()
+        new_participants = response_data.get('_embedded', {}).get('participants', [])
+        page_count = response_data.get('page_count', 1)
+        return new_participants, page_count
+    
+    # PARTICIPANT PROGRESS
 
     def get_participant_progress(self, study_id):
         participants_progress_data, current_page = [], 1
         while True:
-            response = self._session.get(f'{self._api_url}/study/{study_id}/participant-progress/forms?page={current_page}')
-            response.raise_for_status()
-            response_data = response.json()
-            new_participant_progress_data = response_data.get('_embedded', {}).get('participants', [])
+            new_participant_progress_data, page_count = self.get_participant_progress_by_page(study_id, current_page)
             if not new_participant_progress_data:
                 break
             participants_progress_data.extend(new_participant_progress_data)
-            if current_page >= response_data.get('page_count', 1):
+            if current_page >= page_count:
                 break
             current_page += 1
         return participants_progress_data
+    
+    def get_participant_progress_by_page(self, study_id, page):
+        response = self._session.get(f'{self._api_url}/study/{study_id}/participant-progress/forms?page={page}')
+        response.raise_for_status()
+        response_data = response.json()
+        new_participant_progress_data = response_data.get('_embedded', {}).get('participants', [])
+        page_count = response_data.get('page_count', 1)
+        return new_participant_progress_data, page_count
 
     # DATA
 

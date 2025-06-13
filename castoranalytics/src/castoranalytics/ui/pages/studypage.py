@@ -101,7 +101,7 @@ class StudyPage(BasePage):
     # EVENT HANDLERS
 
     def on_back(self):
-        self.back()
+        self.navigate(f'/studies')
 
     def on_show_sites(self):
         self.navigate(f'/studies/{self._study_id}/sites')
