@@ -2,6 +2,8 @@
 
 setlocal
 
+set /p VERSION=<castoranalytics\src\castoranalytics\resources\VERSION
+
 set START_DIR=%CD%
 
 if /I "%~1"=="" (
@@ -22,10 +24,9 @@ if /I "%~1"=="" (
     call briefcase build
     call briefcase run
 
-) else if /I "%~1"=="--installer" (
+) else if /I "%~1"=="--package" (
 
-    set /p VERSION=<castoranalytics\src\castoranalytics\resources\VERSION
-    python scripts\python\updatetomlversion.py %VERSION%
+    call python scripts\python\updatetomlversion.py %VERSION%
     cd castoranalytics
     call briefcase package --adhoc-sign
     
