@@ -11,7 +11,7 @@ from castoranalytics.core.api.countrycodes import CountryCodes
 from castoranalytics.core.logging import LogManager
 from castoranalytics.core.cache import Cache
 from castoranalytics.core.api.castorapiclient import CastorApiClient
-from castoranalytics.core.utils import current_time_in_seconds, elapsed_time_in_seconds, duration
+from castoranalytics.core.utils import current_time_in_seconds, elapsed_time_in_seconds
 
 LOG = LogManager()
 
