@@ -8,8 +8,14 @@ def main():
     print(data['tool']['briefcase']['app']['castoranalytics'])
     with open('requirements.txt', 'r') as f:
         requires = []
+        start_including = False
         for line in f.readlines():
-            requires.append(line.strip())
+            line = line.strip()
+            if line.startswith('# Application'):
+                start_including = True
+                continue
+            if start_including:
+                requires.append(line.strip())
         data['tool']['briefcase']['app']['castoranalytics']['requires'] = requires
     with open('castoranalytics/pyproject.toml', 'wb') as f:
         tomli_w.dump(data, f)

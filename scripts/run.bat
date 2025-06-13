@@ -19,6 +19,8 @@ if /I "%~1"=="" (
 ) else if /I "%~1"=="--exe" (
 
     rmdir /s /q castoranalytics\build
+    call python scripts\python\updatetomlversion.py %VERSION%
+    call python scripts\python\updatetomlrequirements.py
     cd castoranalytics
     call briefcase create
     call briefcase build
@@ -26,7 +28,6 @@ if /I "%~1"=="" (
 
 ) else if /I "%~1"=="--package" (
 
-    call python scripts\python\updatetomlversion.py %VERSION%
     cd castoranalytics
     call briefcase package --adhoc-sign
     
