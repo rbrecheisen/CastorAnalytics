@@ -1,4 +1,3 @@
-import argparse
 import tomli # type: ignore
 import tomli_w
 
