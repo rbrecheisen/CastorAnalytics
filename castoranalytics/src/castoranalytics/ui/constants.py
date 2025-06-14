@@ -14,7 +14,7 @@ CASTOR_ANALYTICS_RESOURCES_ICON = 'castoranalytics.icns' if is_macos() else 'cas
 CASTOR_ANALYTICS_RESOURCES_BACKGROUND_IMAGE = 'home.png'
 CASTOR_ANALYTICS_RESOURCES_BACKGROUND_IMAGE_OPACITY = 0.25
 
-# Settings
+# API Settings
 CASTOR_ANALYTICS_API_SETTINGS_TITLE = 'API settings'
 CASTOR_ANALYTICS_API_SETTINGS_ERROR_MESSAGE = 'It looks like your API settings are incomplete. Please go to settings.'
 CASTOR_ANALYTICS_SETTINGS_KEY_CLIENT_ID = 'castoranalytics.client_id'
@@ -27,6 +27,12 @@ CASTOR_ANALYTICS_SETTINGS_KEY_TOKEN_URL_DEFAULT = 'https://data.castoredc.com/oa
 CASTOR_ANALYTICS_SETTINGS_KEY_API_BASE_URL = 'castoranalytics.api_base_url'
 CASTOR_ANALYTICS_SETTINGS_KEY_API_BASE_URL_NAME = 'API base URL'
 CASTOR_ANALYTICS_SETTINGS_KEY_API_BASE_URL_DEFAULT = 'https://data.castoredc.com/api'
+
+# License key settings
+CASTOR_ANALYTICS_LICENSE_KEY_SETTINGS_TITLE = 'License key'
+CASTOR_ANALYTICS_LICENSE_KEY_SETTINGS_ERROR_MESSAGE = 'It looks like you have not set the license key. Please go to settings.'
+CASTOR_ANALYTICS_SETTINGS_KEY_LICENSE_KEY = 'castoranalytics.license_key'
+CASTOR_ANALYTICS_SETTINGS_KEY_LICENSE_KEY_NAME = 'License key'
 
 # Studies and sites
 CASTOR_ANALYTICS_STUDY_SITES_WARNING_MAX = 10
