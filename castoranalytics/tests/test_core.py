@@ -1,3 +1,4 @@
+import sys
 import pytest
 
 from castoranalytics.core import Core
@@ -7,17 +8,23 @@ from castoranalytics.core.api.studydetails import StudyDetails
 from castoranalytics.core.api.country import Country
 
 STUDY_ID = '8DA52C41-885D-4428-BCEB-8A95DA8DB1E5'
+CASTOR_CLIENT_ID_FILE = 'C:\\Users\\r.brecheisen\\castorclientid.txt'
+CASTOR_CLIENT_SECRET_FILE = 'C:\\Users\\r.brecheisen\\castorclientsecret.txt'
+
+if sys.platform.startswith('darwin'):
+    CASTOR_CLIENT_ID_FILE = '/Users/ralph/castorclientid.txt'
+    CASTOR_CLIENT_SECRET_FILE = '/Users/ralph/castorclientsecret.txt'
 
 
 @pytest.fixture(scope='session')
 def client_id():
-    with open('C:\\Users\\r.brecheisen\\castorclientid.txt', 'r') as f:
+    with open(CASTOR_CLIENT_ID_FILE, 'r') as f:
         return f.readline().strip()
     
 
 @pytest.fixture(scope='session')
 def client_secret():
-    with open('C:\\Users\\r.brecheisen\\castorclientsecret.txt', 'r') as f:
+    with open(CASTOR_CLIENT_SECRET_FILE, 'r') as f:
         return f.readline().strip()
     
 
@@ -97,4 +104,4 @@ def test_get_study_sites(client_id, client_secret, token_url, api_base_url):
         assert isinstance(study_site.get_abbreviation(), str)
         assert isinstance(study_site.get_country_id(), int)
         assert isinstance(study_site.get_nr_records(), int)
-        assert isinstance(study_site.get_completion_rate(), float)
+        assert isinstance(study_site.get_completion_percentage(), int)

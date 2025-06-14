@@ -126,18 +126,18 @@ class Core:
             nr_records_per_site[site_abbreviation] += 1
         return nr_records_per_site
     
-    def get_completion_rates_per_site(self, participant_progress, participant_site_abbreviations):
-        completion_rates_per_site = {}
+    def get_completion_percentages_per_site(self, participant_progress, participant_site_abbreviations):
+        completion_percentages_per_site = {}
         for item in participant_progress:
             site_abbreviation = participant_site_abbreviations[item['participant_id']]
-            if site_abbreviation not in completion_rates_per_site.keys():
-                completion_rates_per_site[site_abbreviation] = 0
+            if site_abbreviation not in completion_percentages_per_site.keys():
+                completion_percentages_per_site[site_abbreviation] = 0
             cummulative_progress = 0
             for form in item['forms']:
                 cummulative_progress += int(form['progress'])
-            completion_rate = cummulative_progress / float(len(item['forms']))
-            completion_rates_per_site[site_abbreviation] += completion_rate
-        return completion_rates_per_site
+            completion_percentage = cummulative_progress / float(len(item['forms']))
+            completion_percentages_per_site[site_abbreviation] += completion_percentage
+        return completion_percentages_per_site
         
     def update_nr_records(self, site_abbreviation, nr_records_per_site):
         nr_records = 0
@@ -145,7 +145,7 @@ class Core:
             nr_records = nr_records_per_site[site_abbreviation]
         return nr_records
     
-    def update_completion_rate(self, site_, nr_records, completion_rates_per_site):
+    def update_completion_percentage(self, site_, nr_records, completion_rates_per_site):
         completion_rate = 0.0
         if site_ in completion_rates_per_site.keys():
             completion_rate = float(completion_rates_per_site[site_] / float(nr_records)) if nr_records > 0 else 0.0
@@ -184,13 +184,13 @@ class Core:
             LOG.info(f'Core.get_study_sites() calculate nr. records per site: {elapsed_time_in_seconds(start_time2)}')
 
             start_time2 = current_time_in_seconds()
-            completion_rates_per_site = self.get_completion_rates_per_site(participant_progress, participant_site_abbreviations)
-            LOG.info(f'Core.get_study_sites() calculate completion rates per site: {elapsed_time_in_seconds(start_time2)}')
+            completion_percentages_per_site = self.get_completion_percentages_per_site(participant_progress, participant_site_abbreviations)
+            LOG.info(f'Core.get_study_sites() calculate completion percentages per site: {elapsed_time_in_seconds(start_time2)}')
 
             start_time2 = current_time_in_seconds()
             for study_site_data in study_sites_data:
                 study_site_data['nr_records'] = self.update_nr_records(study_site_data['abbreviation'], nr_records_per_site)
-                study_site_data['completion_rate'] = self.update_completion_rate(study_site_data['abbreviation'], study_site_data['nr_records'], completion_rates_per_site)
+                study_site_data['completion_percentage'] = self.update_completion_percentage(study_site_data['abbreviation'], study_site_data['nr_records'], completion_percentages_per_site)
                 study_site_data['country_code'] = self.update_country_code(study_site_data['country_id'])
             LOG.info(f'Core.get_study_sites() site info updated: {elapsed_time_in_seconds(start_time2)}')
 

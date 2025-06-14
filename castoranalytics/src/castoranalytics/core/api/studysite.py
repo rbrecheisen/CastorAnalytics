@@ -20,15 +20,15 @@ class StudySite:
     def get_nr_records(self):
         return self._study_site_data['nr_records']
 
-    def get_completion_rate(self):
-        return int(round(self._study_site_data['completion_rate'], 0))
+    def get_completion_percentage(self):
+        return int(round(self._study_site_data['completion_percentage'], 0))
     
     def __str__(self):
-        return 'StudySite(id={}, abbreviation={}, country_id={}, country_code={}, nr_records={}, completion_rate={})'.format(
+        return 'StudySite(id={}, abbreviation={}, country_id={}, country_code={}, nr_records={}, completion_percentage={})'.format(
             self.get_id(),
             self.get_abbreviation(),
             self.get_country_id(),
             self.get_country_code(), 
             self.get_nr_records(),
-            self.get_completion_rate(),
+            self.get_completion_percentage(),
         )
