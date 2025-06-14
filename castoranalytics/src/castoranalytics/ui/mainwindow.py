@@ -1,4 +1,5 @@
 import os
+import requests
 
 from PySide6.QtWidgets import (
     QMainWindow,
@@ -34,6 +35,10 @@ LOG = LogManager()
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
+        result = requests.get('http://localhost:8000/api/licenses/1234/')
+        if result.status_code != 200:
+            print(result.json().get('message'))
+            return
         self._version = self.init_version()
         self._app_label_text = constants.CASTOR_ANALYTICS_WINDOW_TITLE + f' {self._version}'
         self._background_label = self.init_background_label()
