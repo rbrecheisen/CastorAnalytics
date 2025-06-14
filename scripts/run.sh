@@ -17,9 +17,17 @@ elif [ "${1}" == "--exe" ]; then
     cd castoranalytics
     briefcase run
 
+elif [ "${1}" == "--build" ]; then
+
+    rm -rf castoranalytics/build
+    python scripts/python/updatetomlversion.py ${VERSION}
+    python scripts/python/updatetomlrequirements.py
+    cd castoranalytics
+    briefcase create
+    briefcase build
+
 elif [ "${1}" == "--package" ]; then
 
-    python scripts/python/updatetomlversion.py ${VERSION}
     cd castoranalytics
     briefcase package --adhoc-sign
 fi
