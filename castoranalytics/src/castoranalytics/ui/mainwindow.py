@@ -6,14 +6,9 @@ from PySide6.QtWidgets import (
     QStackedLayout,
     QWidget,
     QVBoxLayout,
-    QLabel,
-    QSizePolicy,
 )
 from PySide6.QtGui import (
     QGuiApplication,
-    QPixmap,
-    QPainter, 
-    QColor,
     QIcon,
     QAction,
 )
@@ -27,6 +22,7 @@ from castoranalytics.ui.pages.studypage import StudyPage
 from castoranalytics.ui.pages.studysitelistpage import StudySiteListPage
 from castoranalytics.ui.pages.settingspage import SettingsPage
 from castoranalytics.ui.utils import Label, resource_path
+from castoranalytics.ui.components.backgroundimage import BackgroundImage
 from castoranalytics.core.logging import LogManager
 
 LOG = LogManager()
@@ -35,17 +31,16 @@ LOG = LogManager()
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
-        result = requests.get('http://localhost:8000/api/licenses/1234/')
-        if result.status_code != 200:
-            print(result.json().get('message'))
-            return
+        # result = requests.get('http://localhost:8000/api/licenses/1234/')
+        # if result.status_code != 200:
+        #     print(result.json().get('message'))
+        #     print('Implement mechanism to show warning that license was not ok')
         self._version = self.init_version()
         self._app_label_text = constants.CASTOR_ANALYTICS_WINDOW_TITLE + f' {self._version}'
-        self._background_label = self.init_background_label()
-        self._background_label_pixmap = None
+        self._background_image = self.init_background_image()
         self._router = self.init_router()
         self._file_menu = self.init_file_menu()
-        self._page_layout = self.init_page_layout(self._app_label_text, self._background_label, self._router)
+        self._page_layout = self.init_page_layout(self._app_label_text, self._background_image, self._router)
         self.init_main_window(self._app_label_text, self._page_layout)
 
     # INITIALIZATION
@@ -54,17 +49,10 @@ class MainWindow(QMainWindow):
         with open(resource_path(os.path.join(constants.CASTOR_ANALYTICS_RESOURCES_DIR, 'VERSION')), 'r') as f:
             version = f.readline().strip()
             return version
-
-    def init_background_label(self):
-        label = QLabel()
-        label.setAlignment(Qt.AlignCenter)
-        label.setScaledContents(True)
-        label.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
-        image_path = resource_path(os.path.join(
-            constants.CASTOR_ANALYTICS_RESOURCES_IMAGES_DIR, constants.CASTOR_ANALYTICS_RESOURCES_BACKGROUND_IMAGE))
-        label.setPixmap(self.apply_opacity_to_pixmap(QPixmap(image_path), constants.CASTOR_ANALYTICS_RESOURCES_BACKGROUND_IMAGE_OPACITY))
-        label.setAttribute(Qt.WidgetAttribute.WA_TransparentForMouseEvents, True) # should not handle events!
-        return label
+        
+    def init_background_image(self):
+        image = BackgroundImage()
+        return image
 
     def init_router(self):
         router = Router()
@@ -85,14 +73,14 @@ class MainWindow(QMainWindow):
         menu.addAction(menu_exit_action)
         return menu
 
-    def init_page_layout(self, app_label_text, background_label, router):
+    def init_page_layout(self, app_label_text, background_image, router):
         app_label = Label(app_label_text, type=Label.HEADING1)
         app_label.setAlignment(Qt.AlignCenter)
         page_widget = QWidget()
         layout = QStackedLayout(page_widget)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setStackingMode(QStackedLayout.StackAll)
-        layout.addWidget(background_label)
+        layout.addWidget(background_image)
         layout.addWidget(router)
         page_layout = QVBoxLayout()
         page_layout.addWidget(app_label)
@@ -113,27 +101,13 @@ class MainWindow(QMainWindow):
     # EVENT HANDLERS
 
     def resizeEvent(self, event):
-        if self._background_label_pixmap:
-            scaled_pixmap = self._background_label_pixmap.scaled(
-                self._background_label.size(), aspectMode=Qt.AspectRatioMode.IgnoreAspectRatio, mode=Qt.TransformationMode.SmoothTransformation)
-            self._background_label.setPixmap(
-                self.apply_opacity_to_pixmap(
-                    scaled_pixmap, constants.CASTOR_ANALYTICS_RESOURCES_BACKGROUND_IMAGE_OPACITY))
+        self._background_image.rescale()
         return super().resizeEvent(event)
 
     def on_open_settings_page(self):
         self._router.navigate('/settings')
 
     # MISCELLANEOUS
-
-    def apply_opacity_to_pixmap(self, pixmap, opacity):
-        transparent_pixmap = QPixmap(pixmap.size())
-        transparent_pixmap.fill(QColor(0, 0, 0, 0))
-        painter = QPainter(transparent_pixmap)
-        painter.setOpacity(opacity)
-        painter.drawPixmap(0, 0, pixmap)
-        painter.end()
-        return transparent_pixmap
 
     def center_window(self):
         screen = QGuiApplication.primaryScreen().geometry()
