@@ -96,8 +96,8 @@ class MainWindow(QMainWindow):
     # MISCELLANEOUS
 
     def load_geometry_and_state(self):
-        geometry = self.get_settings().get(constants.CASTOR_ANALYTICS_WINDOW_GEOMETRY_KEY, None)
-        state = self.get_settings().get(constants.CASTOR_ANALYTICS_WINDOW_STATE_KEY, None)
+        geometry = self.get_settings().get(constants.CASTOR_ANALYTICS_WINDOW_GEOMETRY_KEY)
+        state = self.get_settings().get(constants.CASTOR_ANALYTICS_WINDOW_STATE_KEY)
         if isinstance(geometry, QByteArray) and self.restoreGeometry(geometry):
             if isinstance(state, QByteArray):
                 self.restoreState(state)
