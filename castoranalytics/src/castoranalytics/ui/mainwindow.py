@@ -16,6 +16,7 @@ from castoranalytics.ui.settings import Settings
 from castoranalytics.ui.components.mainpanel import MainPanel
 from castoranalytics.ui.components.loggingdockwidget import LoggingDockWidget
 from castoranalytics.ui.components.studytreedockwidget import StudyTreeDockerWidget
+from castoranalytics.ui.components.budyoverlaywidget import BusyOverlayWidget
 from castoranalytics.ui.components.toolbar import ToolBar
 from castoranalytics.ui.components.statusindicator import StatusIndicator
 from castoranalytics.ui.utils import resource_path
@@ -28,6 +29,7 @@ class MainWindow(QMainWindow):
         self._main_panel = MainPanel()
         self._study_tree_dock_widget = StudyTreeDockerWidget()
         self._logging_dock_widget = LoggingDockWidget()
+        self._busy_overlay = BusyOverlayWidget(self)
         self.init_window()
 
     # INITIALIZATION
@@ -51,6 +53,7 @@ class MainWindow(QMainWindow):
         self.addDockWidget(
             Qt.DockWidgetArea.BottomDockWidgetArea, self.get_logging_dock_widget())
         self.setCentralWidget(self.get_main_panel())
+        # self.get_busy_overlay().show_overlay()
 
     # GET
 
@@ -65,6 +68,9 @@ class MainWindow(QMainWindow):
     
     def get_logging_dock_widget(self):
         return self._logging_dock_widget
+    
+    def get_busy_overlay(self):
+        return self._busy_overlay
 
     # EVENTS
 
