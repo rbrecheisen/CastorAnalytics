@@ -2,12 +2,6 @@ import os
 
 from PySide6.QtWidgets import (
     QMainWindow,
-    QWidget,
-    QVBoxLayout,
-    QTabWidget,
-    QTextEdit,
-    QToolBar,
-    QStatusBar,
 )
 from PySide6.QtGui import (
     QGuiApplication,
@@ -19,6 +13,7 @@ from PySide6.QtCore import Qt, QByteArray
 import castoranalytics.ui.constants as constants
 
 from castoranalytics.ui.settings import Settings
+from castoranalytics.ui.components.mainpanel import MainPanel
 from castoranalytics.ui.components.loggingdockwidget import LoggingDockWidget
 from castoranalytics.ui.components.studytreedockwidget import StudyTreeDockerWidget
 from castoranalytics.ui.components.toolbar import ToolBar
@@ -29,30 +24,14 @@ from castoranalytics.ui.utils import resource_path
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
-        self._settings = self.init_settings()
-        self._main_panel = self.init_main_panel()
-        self._study_tree_dock_widget = self.init_study_tree_dock_widget()
-        self._logging_dock_widget = self.init_logging_dock_widget()
+        self._settings = Settings()
+        self._main_panel = MainPanel()
+        self._study_tree_dock_widget = StudyTreeDockerWidget()
+        self._logging_dock_widget = LoggingDockWidget()
         self.init_window()
 
     # INITIALIZATION
 
-    def init_settings(self):
-        return Settings()
-    
-    def init_main_panel(self):
-        widget = QTabWidget(self)
-        widget.addTab(QTextEdit(''), 'Details')
-        widget.addTab(QTextEdit(''), 'Summary Statistics')
-        widget.addTab(QTextEdit(''), 'Advanced Visualizations')
-        return widget
-    
-    def init_study_tree_dock_widget(self):
-        return StudyTreeDockerWidget()
-    
-    def init_logging_dock_widget(self):
-        return LoggingDockWidget()
-    
     def init_toolbar(self):
         self.addToolBar(ToolBar())
 
