@@ -6,8 +6,8 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 
-from castoranalytics.ui.pages.basepage import BasePage
-from castoranalytics.ui.utils import Label
+from castoranalytics.ui_old.pages.basepage import BasePage
+from castoranalytics.ui_old.utils import Label
 from castoranalytics.core.logging import LogManager
 
 LOG = LogManager()

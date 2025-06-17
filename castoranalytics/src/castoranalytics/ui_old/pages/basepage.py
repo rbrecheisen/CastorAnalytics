@@ -5,11 +5,11 @@ from PySide6.QtWidgets import (
 )
 from PySide6.QtCore import Qt
 
-import castoranalytics.ui.constants as constants
+import castoranalytics.ui_old.constants as constants
 
 from castoranalytics.core import Core
 from castoranalytics.core.logging import LogManager
-from castoranalytics.ui.utils import to_main_thread, BusyOverlay, Settings
+from castoranalytics.ui_old.utils import to_main_thread, BusyOverlay, Settings
 
 LOG = LogManager()
 

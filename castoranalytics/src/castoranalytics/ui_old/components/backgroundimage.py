@@ -11,8 +11,8 @@ from PySide6.QtGui import (
 )
 from PySide6.QtCore import Qt
 
-import castoranalytics.ui.constants as constants
-from castoranalytics.ui.utils import resource_path
+import castoranalytics.ui_old.constants as constants
+from castoranalytics.ui_old.utils import resource_path
 
 
 class BackgroundImage(QLabel):

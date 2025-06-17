@@ -1,112 +1,118 @@
 import os
-import requests
 
 from PySide6.QtWidgets import (
     QMainWindow,
-    QStackedLayout,
     QWidget,
     QVBoxLayout,
+    QTabWidget,
+    QTextEdit,
+    QToolBar,
+    QStatusBar,
 )
 from PySide6.QtGui import (
     QGuiApplication,
     QIcon,
     QAction,
 )
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QByteArray
 
 import castoranalytics.ui.constants as constants
 
-from castoranalytics.ui.pages.router import Router
-from castoranalytics.ui.pages.studylistpage import StudyListPage
-from castoranalytics.ui.pages.studypage import StudyPage
-from castoranalytics.ui.pages.studysitelistpage import StudySiteListPage
-from castoranalytics.ui.pages.settingspage import SettingsPage
-from castoranalytics.ui.utils import Label, resource_path
-from castoranalytics.ui.components.backgroundimage import BackgroundImage
-from castoranalytics.core.logging import LogManager
-
-LOG = LogManager()
+from castoranalytics.ui.settings import Settings
+from castoranalytics.ui.components.loggingdockwidget import LoggingDockWidget
+from castoranalytics.ui.components.studytreedockwidget import StudyTreeDockerWidget
+from castoranalytics.ui.components.toolbar import ToolBar
+from castoranalytics.ui.components.statusindicator import StatusIndicator
+from castoranalytics.ui.utils import resource_path
 
 
 class MainWindow(QMainWindow):
     def __init__(self):
-        super().__init__()
-        # result = requests.get('http://localhost:8000/api/licenses/1234/')
-        # if result.status_code != 200:
-        #     print(result.json().get('message'))
-        #     print('Implement mechanism to show warning that license was not ok')
-        self._version = self.init_version()
-        self._app_label_text = constants.CASTOR_ANALYTICS_WINDOW_TITLE + f' {self._version}'
-        self._background_image = self.init_background_image()
-        self._router = self.init_router()
-        self._file_menu = self.init_file_menu()
-        self._page_layout = self.init_page_layout(self._app_label_text, self._background_image, self._router)
-        self.init_main_window(self._app_label_text, self._page_layout)
+        super(MainWindow, self).__init__()
+        self._settings = self.init_settings()
+        self._main_panel = self.init_main_panel()
+        self._study_tree_dock_widget = self.init_study_tree_dock_widget()
+        self._logging_dock_widget = self.init_logging_dock_widget()
+        self.init_window()
 
     # INITIALIZATION
 
-    def init_version(self):
-        with open(resource_path(os.path.join(constants.CASTOR_ANALYTICS_RESOURCES_DIR, 'VERSION')), 'r') as f:
-            version = f.readline().strip()
-            return version
-        
-    def init_background_image(self):
-        image = BackgroundImage()
-        return image
+    def init_settings(self):
+        return Settings()
+    
+    def init_main_panel(self):
+        widget = QTabWidget(self)
+        widget.addTab(QTextEdit(''), 'Details')
+        widget.addTab(QTextEdit(''), 'Summary Statistics')
+        widget.addTab(QTextEdit(''), 'Advanced Visualizations')
+        return widget
+    
+    def init_study_tree_dock_widget(self):
+        return StudyTreeDockerWidget()
+    
+    def init_logging_dock_widget(self):
+        return LoggingDockWidget()
+    
+    def init_toolbar(self):
+        self.addToolBar(ToolBar())
 
-    def init_router(self):
-        router = Router()
-        router.add_page(StudyListPage(), '/studies')
-        router.add_page(StudyPage(), '/studies/:study_id')
-        router.add_page(StudySiteListPage(), '/studies/:study_id/sites')
-        router.add_page(SettingsPage(), '/settings')
-        router.navigate('/studies')
-        return router
+    def init_status_indicator(self):
+        self.setStatusBar(StatusIndicator())
 
-    def init_file_menu(self):
-        menu = self.menuBar().addMenu('File')
-        menu_settings_action = QAction('Settings', self)
-        menu_settings_action.triggered.connect(self.on_open_settings_page)
-        menu_exit_action = QAction('Exit', self)
-        menu_exit_action.triggered.connect(self.close)
-        menu.addAction(menu_settings_action)
-        menu.addAction(menu_exit_action)
-        return menu
-
-    def init_page_layout(self, app_label_text, background_image, router):
-        app_label = Label(app_label_text, type=Label.HEADING1)
-        app_label.setAlignment(Qt.AlignCenter)
-        page_widget = QWidget()
-        layout = QStackedLayout(page_widget)
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setStackingMode(QStackedLayout.StackAll)
-        layout.addWidget(background_image)
-        layout.addWidget(router)
-        page_layout = QVBoxLayout()
-        page_layout.addWidget(app_label)
-        page_layout.addWidget(page_widget)
-        return page_layout
-
-    def init_main_window(self, app_label_text, page_layout):
-        widget = QWidget()
-        widget.setLayout(page_layout)
-        self.setWindowTitle(app_label_text)
+    def init_window(self):
+        self.init_toolbar()
+        self.init_status_indicator()
+        self.setWindowTitle(constants.CASTOR_ANALYTICS_WINDOW_TITLE)
         self.setWindowIcon(QIcon(resource_path(os.path.join(
             constants.CASTOR_ANALYTICS_RESOURCES_IMAGES_ICONS_DIR, constants.CASTOR_ANALYTICS_RESOURCES_ICON))))
-        self.setCentralWidget(widget)
-        self.resize(constants.CASTOR_ANALYTICS_WINDOW_W, constants.CASTOR_ANALYTICS_WINDOW_H)
-        self.center_window()
+        if not self.load_geometry_and_state():
+            self.set_default_size_and_position()
+        self.addDockWidget(
+            Qt.DockWidgetArea.LeftDockWidgetArea, self.get_study_tree_dock_widget())
+        self.addDockWidget(
+            Qt.DockWidgetArea.BottomDockWidgetArea, self.get_logging_dock_widget())
+        self.setCentralWidget(self.get_main_panel())
 
-    # EVENT HANDLERS
+    # GET
 
-    def resizeEvent(self, event):
-        self._background_image.rescale()
-        return super().resizeEvent(event)
+    def get_settings(self):
+        return self._settings
+    
+    def get_main_panel(self):
+        return self._main_panel
+    
+    def get_study_tree_dock_widget(self):
+        return self._study_tree_dock_widget
+    
+    def get_logging_dock_widget(self):
+        return self._logging_dock_widget
 
-    def on_open_settings_page(self):
-        self._router.navigate('/settings')
+    # EVENTS
+
+    def closeEvent(self, event):
+        self.save_geometry_and_state()
+        return super().closeEvent(event)
 
     # MISCELLANEOUS
+
+    def load_geometry_and_state(self):
+        geometry = self.get_settings().get(constants.CASTOR_ANALYTICS_WINDOW_GEOMETRY_KEY, None)
+        state = self.get_settings().get(constants.CASTOR_ANALYTICS_WINDOW_STATE_KEY, None)
+        if isinstance(geometry, QByteArray) and self.restoreGeometry(geometry):
+            if isinstance(state, QByteArray):
+                self.restoreState(state)
+            return True
+        return False
+
+    def save_geometry_and_state(self):
+        self.get_settings().set(
+            constants.CASTOR_ANALYTICS_WINDOW_GEOMETRY_KEY, self.saveGeometry())
+        self.get_settings().set(
+            constants.CASTOR_ANALYTICS_WINDOW_STATE_KEY, self.saveState())
+
+    def set_default_size_and_position(self):
+        self.resize(constants.CASTOR_ANALYTICS_WINDOW_W, constants.CASTOR_ANALYTICS_WINDOW_H)
+        self.center_window()
 
     def center_window(self):
         screen = QGuiApplication.primaryScreen().geometry()

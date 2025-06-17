@@ -1,6 +1,6 @@
 from PySide6.QtCore import QSettings
 
-import castoranalytics.ui_new.constants as constants
+import castoranalytics.ui.constants as constants
 
 
 class Settings(QSettings):
