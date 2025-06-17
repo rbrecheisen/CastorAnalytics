@@ -14,12 +14,14 @@ import castoranalytics.ui.constants as constants
 
 from castoranalytics.ui.settings import Settings
 from castoranalytics.ui.components.mainpanel import MainPanel
-from castoranalytics.ui.components.loggingdockwidget import LoggingDockWidget
-from castoranalytics.ui.components.studytreedockwidget import StudyTreeDockerWidget
+from castoranalytics.ui.components.logsdockwidget import LogsDockWidget
+from castoranalytics.ui.components.studiesdockwidget import StudiesDockWidget
 from castoranalytics.ui.components.budyoverlaywidget import BusyOverlayWidget
 from castoranalytics.ui.components.toolbar import ToolBar
 from castoranalytics.ui.components.statusindicator import StatusIndicator
 from castoranalytics.ui.utils import resource_path
+
+# TODO: https://chatgpt.com/g/g-p-6842b66a6fa48191ba9efa9f3d8878e4-castor-analytics/c/68515b87-c8c8-800b-9acc-b1f3aa86435f (Model/View events)
 
 
 class MainWindow(QMainWindow):
@@ -27,8 +29,8 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
         self._settings = Settings()
         self._main_panel = MainPanel()
-        self._study_tree_dock_widget = StudyTreeDockerWidget()
-        self._logging_dock_widget = LoggingDockWidget()
+        self._studies_dock_widget = StudiesDockWidget()
+        self._logs_dock_widget = LogsDockWidget()
         self._busy_overlay = BusyOverlayWidget(self)
         self.init_window()
 
@@ -49,9 +51,9 @@ class MainWindow(QMainWindow):
         if not self.load_geometry_and_state():
             self.set_default_size_and_position()
         self.addDockWidget(
-            Qt.DockWidgetArea.LeftDockWidgetArea, self.get_study_tree_dock_widget())
+            Qt.DockWidgetArea.LeftDockWidgetArea, self.get_studies_dock_widget())
         self.addDockWidget(
-            Qt.DockWidgetArea.BottomDockWidgetArea, self.get_logging_dock_widget())
+            Qt.DockWidgetArea.BottomDockWidgetArea, self.get_logs_dock_widget())
         self.setCentralWidget(self.get_main_panel())
         # self.get_busy_overlay().show_overlay()
 
@@ -63,11 +65,11 @@ class MainWindow(QMainWindow):
     def get_main_panel(self):
         return self._main_panel
     
-    def get_study_tree_dock_widget(self):
-        return self._study_tree_dock_widget
+    def get_studies_dock_widget(self):
+        return self._studies_dock_widget
     
-    def get_logging_dock_widget(self):
-        return self._logging_dock_widget
+    def get_logs_dock_widget(self):
+        return self._logs_dock_widget
     
     def get_busy_overlay(self):
         return self._busy_overlay
