@@ -29,3 +29,10 @@ Nedim wants to view a table listing all sites in the CRAFT Audit Study. The tabl
 
 The table should be sortable by (1) site country, (2) number of patients and (3) form completion percentage. The first
 thing Nedim needs to do is start the application from his desktop. 
+
+## Model-View
+Create a model hierarchy: StudyListModel, StudyModel, StudySiteListModel, StudySiteModel. These models know how to load
+data for themselves and notify the view components in PySide6. 
+
+IMPORTANT! The previous Core was PySide6-agnostic but if you want to use a robust mechanism for signals/slots you need
+to stay within the Pyside6 domain! That is ok I think.
