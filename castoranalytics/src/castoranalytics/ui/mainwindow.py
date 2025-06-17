@@ -96,7 +96,6 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(widget)
         self.resize(constants.CASTOR_ANALYTICS_WINDOW_W, constants.CASTOR_ANALYTICS_WINDOW_H)
         self.center_window()
-        self.show()
 
     # EVENT HANDLERS
 

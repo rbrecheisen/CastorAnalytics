@@ -3,8 +3,9 @@ import importlib.metadata
 
 from PySide6 import QtWidgets
 
-from castoranalytics.ui.mainwindow import MainWindow
-from castoranalytics.ui.bootstrap import BOOTSTRAP_CSS
+# from castoranalytics.ui.mainwindow import MainWindow
+from castoranalytics.ui_new.mainwindow import MainWindow
+from castoranalytics.ui_new.css import BOOTSTRAP_CSS
 
 
 def main():
@@ -13,7 +14,8 @@ def main():
     QtWidgets.QApplication.setApplicationName(metadata["Formal-Name"])
     app = QtWidgets.QApplication(sys.argv)
     app.setStyleSheet(BOOTSTRAP_CSS)
-    main_window = MainWindow() # you need to create a variable!
+    main_window = MainWindow()
+    main_window.show()
     sys.exit(app.exec())
 
 
