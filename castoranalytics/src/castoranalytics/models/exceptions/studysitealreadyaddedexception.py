@@ -1,0 +1,2 @@
+class StudySiteAlreadyAddedException(BaseException):
+    pass
