@@ -16,7 +16,7 @@ from castoranalytics.ui.settings import Settings
 from castoranalytics.ui.components.mainpanel import MainPanel
 from castoranalytics.ui.components.logsdockwidget import LogsDockWidget
 from castoranalytics.ui.components.studiesdockwidget import StudiesDockWidget
-from castoranalytics.ui.components.budyoverlaywidget import BusyOverlayWidget
+from castoranalytics.ui.components.busyoverlaywidget import BusyOverlayWidget
 from castoranalytics.ui.components.toolbar import ToolBar
 from castoranalytics.ui.components.statusindicator import StatusIndicator
 from castoranalytics.ui.utils import resource_path
