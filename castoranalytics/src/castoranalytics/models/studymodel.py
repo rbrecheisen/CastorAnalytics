@@ -1,11 +1,16 @@
 from castoranalytics.models.model import Model
-from castoranalytics.models.exceptions.studysitenotfoundexception import StudySiteNotFoundException
-from castoranalytics.models.exceptions.studysitealreadyaddedexception import StudySiteAlreadyAddedException
+from castoranalytics.models.fieldmodel import FieldModel
+from castoranalytics.models.optiongroupmodel import OptionGroupModel
+from castoranalytics.models.studysitemodel import StudySiteModel
 
 
 class StudyModel(Model):
     def __init__(self, id, name):
         super(StudyModel, self).__init__()
+        if not isinstance(id, str):
+            raise RuntimeError(f'Argument "id" not a string but "{type(id)}"')
+        if not isinstance(name, str):
+            raise RuntimeError(f'Argument "name" not a string but "{type(id)}"')
         self._id = id
         self._name = name
         self._fields = {}
@@ -23,14 +28,16 @@ class StudyModel(Model):
     # SITES
 
     def add_site(self, site):
+        if not isinstance(site, StudySiteModel):
+            raise RuntimeError('Object is not of type "StudySiteModel"')
         if site.id() not in self._sites.keys():
             self._sites[site.id()] = site
         else:
-            raise StudySiteAlreadyAddedException(f'Site with ID {site.id()} already added to study')
+            raise RuntimeError(f'Site with ID "{site.id()}" already added to study')
         
     def site(self, id):
         if not id in self._sites.keys():
-            raise StudySiteNotFoundException(f'Site with ID {id} not found')
+            raise RuntimeError(f'Site with ID "{id}" not found')
         return self._sites[id]
     
     def nr_sites(self):
@@ -39,10 +46,13 @@ class StudyModel(Model):
     # FIELDS
 
     def add_field(self, field):
-        pass
+        if not isinstance(field, FieldModel):
+            raise RuntimeError('Object is not of type "FieldModel"')
 
     def field(self, id):
-        pass
+        if id not in self._fields.keys():
+            raise RuntimeError(f'Field with ID "{id}" does not exist')
+        return self._fields[id]
 
     def nr_fields(self):
         return len(self._fields.keys())
@@ -50,10 +60,17 @@ class StudyModel(Model):
     # OPTION GROUPS
 
     def add_option_group(self, option_group):
-        pass
+        if not isinstance(option_group, OptionGroupModel):
+            raise RuntimeError('Object is not of type "OptionGroupModel"')
+        if option_group.id() not in self._option_groups.keys():
+            self._option_groups[option_group.id()] = option_group
+        else:
+            raise RuntimeError(f'Option group with ID "{option_group.id()}" already added to study')
 
     def option_group(self, id):
-        pass
+        if id not in self._option_groups.keys():
+            raise RuntimeError(f'Option group with ID "{id}" does not exist')
+        return self._option_groups[id]
 
     def nr_option_groups(self):
         return len(self._option_groups.keys())

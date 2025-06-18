@@ -1,2 +1,0 @@
-class StudySiteNotFoundException(BaseException):
-    pass

@@ -1,2 +1,0 @@
-class RecordAlreadyAddedException(BaseException):
-    pass
