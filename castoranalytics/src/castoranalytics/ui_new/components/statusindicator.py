@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QStatusBar
 
-import castoranalytics.ui.constants as constants
+import castoranalytics.ui_new.constants as constants
 
 
 class StatusIndicator(QStatusBar):

@@ -1,8 +1,8 @@
 from PySide6.QtWidgets import QDockWidget, QVBoxLayout
 
-import castoranalytics.ui.constants as constants
+import castoranalytics.ui_new.constants as constants
 
-from castoranalytics.ui.components.studieswidget import StudiesWidget
+from castoranalytics.ui_new.components.studieswidget import StudiesWidget
 
 # TODO: Show warning if API credentials are not configured
 

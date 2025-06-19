@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import QStackedWidget
 
-from castoranalytics.ui_old.pages.route import Route
+from castoranalytics.ui.pages.route import Route
 
 
 class Router(QStackedWidget):

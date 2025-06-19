@@ -1,8 +1,8 @@
 from PySide6.QtWidgets import QDockWidget
 
-import castoranalytics.ui.constants as constants
+import castoranalytics.ui_new.constants as constants
 
-from castoranalytics.ui.components.logswidget import LogsWidget
+from castoranalytics.ui_new.components.logswidget import LogsWidget
 
 
 class LogsDockWidget(QDockWidget):

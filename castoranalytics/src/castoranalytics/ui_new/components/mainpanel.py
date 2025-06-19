@@ -3,7 +3,7 @@ from PySide6.QtWidgets import (
     QTextEdit,
 )
 
-import castoranalytics.ui.constants as constants
+import castoranalytics.ui_new.constants as constants
 
 
 class MainPanel(QTabWidget):

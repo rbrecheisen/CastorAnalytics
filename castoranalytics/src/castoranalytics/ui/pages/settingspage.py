@@ -7,10 +7,10 @@ from PySide6.QtWidgets import (
     QVBoxLayout,
 )
 
-import castoranalytics.ui_old.constants as constants
+import castoranalytics.ui.constants as constants
 
-from castoranalytics.ui_old.pages.basepage import BasePage
-from castoranalytics.ui_old.utils import Label
+from castoranalytics.ui.pages.basepage import BasePage
+from castoranalytics.ui.utils import Label
 
 
 class SettingsPage(BasePage):
