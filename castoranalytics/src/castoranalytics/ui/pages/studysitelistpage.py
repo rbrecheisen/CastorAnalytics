@@ -69,7 +69,7 @@ class StudySiteListPage(BasePage):
             self._table_widget.setItem(row, 1, QTableWidgetItem(study_site.get_name()))
             self._table_widget.setItem(row, 2, QTableWidgetItem(study_site.get_country_code()))
             self._table_widget.setItem(row, 3, NumericTableWidgetItem(study_site.get_nr_records())) # Handles sorting correctly for numbers
-            self._table_widget.setItem(row, 4, NumericTableWidgetItem(study_site.get_completion_rate()))
+            self._table_widget.setItem(row, 4, NumericTableWidgetItem(study_site.get_completion_percentage()))
         
     # EVENT HANDLERS
 

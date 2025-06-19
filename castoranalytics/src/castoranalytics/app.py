@@ -4,8 +4,8 @@ import importlib.metadata
 from PySide6 import QtWidgets
 
 # from castoranalytics.ui.mainwindow import MainWindow
-from castoranalytics.ui_new.mainwindow import MainWindow
-from castoranalytics.ui_new.css import BOOTSTRAP_CSS
+from castoranalytics.ui.mainwindow import MainWindow
+from castoranalytics.ui.bootstrap import BOOTSTRAP_CSS
 
 
 def main():
