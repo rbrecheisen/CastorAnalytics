@@ -2,7 +2,7 @@
 project_name = "Castor Analytics"
 bundle = "com.rbeesoft"
 icon = "src/castoranalytics/resources/images/icons/castoranalytics"
-version = "1.0"
+version = "1.1"
 url = "https://rbeesoft.nl/castoranalytics"
 author = "Ralph Brecheisen"
 author_email = "ralph.brecheisen@gmail.com"
