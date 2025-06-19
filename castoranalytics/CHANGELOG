@@ -8,3 +8,7 @@
 * View study sites
 * Settings for API credentials
 * Caching
+
+## 1.1 (19-06-2025)
+
+* Fixed bug completion percentage column
