@@ -10,7 +10,7 @@ class LogManager:
         timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         message = f'[{timestamp}] {level} {self._name}: {message}'
         if hasattr(sys, '_MEIPASS'):
-            with open('CastorAnalytics.log', 'a', encoding='utf-8') as f:
+            with open('CastorAnalytics.log', 'w', encoding='utf-8') as f:
                 f.write(message + '\n')
         print(message)
 

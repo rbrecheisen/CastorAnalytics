@@ -1,3 +1,5 @@
+import json
+
 from PySide6.QtWidgets import (
     QTableWidget,
     QTableWidgetItem,
@@ -58,6 +60,7 @@ class StudySiteListPage(BasePage):
             self._study_site_list_label.setText(f'Study sites for {self._study.get_name()}')
 
     def update_table_widget(self, study_sites):
+        self._table_widget.clearContents()
         self._table_widget.setRowCount(len(study_sites))
         self._table_widget.setColumnCount(5)
         self._table_widget.setHorizontalHeaderLabels(['Site code', 'Site name', 'Country code', 'Nr. records', 'Complete %'])
@@ -89,5 +92,7 @@ class StudySiteListPage(BasePage):
             self.load_data('get_study_sites', self._study_id)
     
     def on_data_ready(self, study_sites, error):
+        for study_site in study_sites:
+            LOG.info(f'StudySiteListPage.on_data_ready() {study_site}')
         self.update_study_site_list_label(error)
         self.update_table_widget(study_sites)
