@@ -59,8 +59,24 @@ class StudySiteListPage(BasePage):
         else:
             self._study_site_list_label.setText(f'Study sites for {self._study.get_name()}')
 
+    # def update_table_widget(self, study_sites):
+    #     self._table_widget.clearContents()
+    #     self._table_widget.setRowCount(len(study_sites))
+    #     self._table_widget.setColumnCount(5)
+    #     self._table_widget.setHorizontalHeaderLabels(['Site code', 'Site name', 'Country code', 'Nr. records', 'Complete %'])
+    #     self._table_widget.setAlternatingRowColors(True)
+    #     self._table_widget.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
+    #     self._table_widget.horizontalHeader().setDefaultAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+    #     for row, study_site in enumerate(study_sites):
+    #         self._table_widget.setItem(row, 0, QTableWidgetItem(study_site.get_abbreviation()))
+    #         self._table_widget.setItem(row, 1, QTableWidgetItem(study_site.get_name()))
+    #         self._table_widget.setItem(row, 2, QTableWidgetItem(study_site.get_country_code()))
+    #         self._table_widget.setItem(row, 3, NumericTableWidgetItem(study_site.get_nr_records())) # Handles sorting correctly for numbers
+    #         self._table_widget.setItem(row, 4, NumericTableWidgetItem(study_site.get_completion_percentage()))
+        
     def update_table_widget(self, study_sites):
-        self._table_widget.clearContents()
+        self._table_widget.setSortingEnabled(False)
+        self._table_widget.clear()
         self._table_widget.setRowCount(len(study_sites))
         self._table_widget.setColumnCount(5)
         self._table_widget.setHorizontalHeaderLabels(['Site code', 'Site name', 'Country code', 'Nr. records', 'Complete %'])
@@ -71,9 +87,11 @@ class StudySiteListPage(BasePage):
             self._table_widget.setItem(row, 0, QTableWidgetItem(study_site.get_abbreviation()))
             self._table_widget.setItem(row, 1, QTableWidgetItem(study_site.get_name()))
             self._table_widget.setItem(row, 2, QTableWidgetItem(study_site.get_country_code()))
-            self._table_widget.setItem(row, 3, NumericTableWidgetItem(study_site.get_nr_records())) # Handles sorting correctly for numbers
-            self._table_widget.setItem(row, 4, NumericTableWidgetItem(study_site.get_completion_percentage()))
-        
+            self._table_widget.setItem(row, 3, NumericTableWidgetItem(study_site.get_nr_records()))
+            self._table_widget.setItem(row, 4, NumericTableWidgetItem(study_site.get_completion_percentage()))    
+        self._table_widget.setSortingEnabled(True)
+        self._table_widget.viewport().update()
+    
     # EVENT HANDLERS
 
     def on_back(self):
@@ -92,7 +110,5 @@ class StudySiteListPage(BasePage):
             self.load_data('get_study_sites', self._study_id)
     
     def on_data_ready(self, study_sites, error):
-        for study_site in study_sites:
-            LOG.info(f'StudySiteListPage.on_data_ready() {study_site}')
         self.update_study_site_list_label(error)
         self.update_table_widget(study_sites)
