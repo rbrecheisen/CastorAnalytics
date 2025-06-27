@@ -20,9 +20,6 @@ Desktop application for viewing summary statistics and advanced visualizations f
     - abbreviation()
     - country() -> Country
     - records() -> List[Record]
-- StudySurvey
-    - id()
-    - name()
 - Field
     - id()
     - name()
