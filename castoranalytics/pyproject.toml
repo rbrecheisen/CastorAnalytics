@@ -21,8 +21,9 @@ test_sources = [
 ]
 
 requires = [
-    "PySide6-Essentials~=6.8",
-    # "PySide6-Addons~=6.8",
+    "pyside6>=6.9",
+    "oauthlib>=3.2",
+    "requests-oauthlib>=2.0",
 ]
 test_requires = [
     "pytest",
