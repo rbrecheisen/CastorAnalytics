@@ -4,11 +4,14 @@ import csv
 from oauthlib.oauth2 import BackendApplicationClient
 from requests_oauthlib import OAuth2Session
 
+TOKEN_URL = 'https://data.castoredc.com/oauth/token'
+API_BASE_URL = 'https://data.castoredc.com/api'
+
 
 class CastorApiClient:
-    def __init__(self, client_id, client_secret, token_url, api_base_url):
-        self._session = self.create_session(client_id, client_secret, token_url)
-        self._api_url = api_base_url
+    def __init__(self, client_id, client_secret):
+        self._session = self.create_session(client_id, client_secret, TOKEN_URL)
+        self._api_url = API_BASE_URL
 
     def create_session(self, client_id, client_secret, token_url):
         client = BackendApplicationClient(client_id=client_id)
