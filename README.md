@@ -14,12 +14,16 @@ Desktop application for viewing summary statistics and advanced visualizations f
     - optiongroups() -> List[OptionGroup]
     - records() -> List[Record]
     - sites() -> List[StudySite]
+    - surveys() -> List[StudySurvey]
 - StudySite
     - id()
     - name()
     - abbreviation()
     - country() -> Country
     - records() -> List[Record]
+- StudySurvey
+    - id()
+    - name()
 - Field
     - id()
     - name()
