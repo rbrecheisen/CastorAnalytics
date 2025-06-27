@@ -1,24 +1,22 @@
-import sys
 import datetime
 
 
 class LogManager:
-    def __init__(self):
-        self._name = 'castormobile'
+    def __init__(self, suppress_print=False):
+        self._suppress_print = suppress_print
 
     def _log(self, level, message):
         timestamp = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
-        message = f'[{timestamp}] {level} {self._name}: {message}'
-        if hasattr(sys, '_MEIPASS'):
-            with open('CastorAnalytics.log', 'w', encoding='utf-8') as f:
-                f.write(message + '\n')
-        print(message)
+        message = f'[{timestamp}] {level} : {message}'
+        if not self._suppress_print:
+            print(message)
+        return message
 
     def info(self, message):
-        self._log('INFO', message)
+        return self._log('INFO', message)
 
     def warning(self, message):
-        self._log('WARNING', message)
+        return self._log('WARNING', message)
 
     def error(self, message):
-        self._log('ERROR', message)
+        return self._log('ERROR', message)

@@ -1,114 +1,111 @@
 import os
-import requests
+
+from typing import Any
 
 from PySide6.QtWidgets import (
     QMainWindow,
-    QStackedLayout,
-    QWidget,
-    QVBoxLayout,
 )
 from PySide6.QtGui import (
     QGuiApplication,
-    QIcon,
     QAction,
+    QIcon,
 )
-from PySide6.QtCore import Qt
+from PySide6.QtCore import Qt, QByteArray
 
 import castoranalytics.ui.constants as constants
 
-from castoranalytics.ui.pages.router import Router
-from castoranalytics.ui.pages.studylistpage import StudyListPage
-from castoranalytics.ui.pages.studypage import StudyPage
-from castoranalytics.ui.pages.studysitelistpage import StudySiteListPage
-from castoranalytics.ui.pages.settingspage import SettingsPage
-from castoranalytics.ui.utils import Label, resource_path
-from castoranalytics.ui.components.backgroundimage import BackgroundImage
-from castoranalytics.core.logging import LogManager
-
-LOG = LogManager()
+from castoranalytics.ui.settings import Settings
+from castoranalytics.ui.panels.mainpanel import MainPanel
+from castoranalytics.ui.utils import resource_path, version, is_macos
 
 
 class MainWindow(QMainWindow):
-    def __init__(self):
-        super().__init__()
-        # result = requests.get('http://localhost:8000/api/licenses/1234/')
-        # if result.status_code != 200:
-        #     print(result.json().get('message'))
-        #     print('Implement mechanism to show warning that license was not ok')
-        self._version = self.init_version()
-        self._app_label_text = constants.CASTOR_ANALYTICS_WINDOW_TITLE + f' {self._version}'
-        self._background_image = self.init_background_image()
-        self._router = self.init_router()
-        self._file_menu = self.init_file_menu()
-        self._page_layout = self.init_page_layout(self._app_label_text, self._background_image, self._router)
-        self.init_main_window(self._app_label_text, self._page_layout)
+    def __init__(self) -> None:
+        super(MainWindow, self).__init__()
+        self._settings = None
+        self._main_panel = None
+        self._view = None
+        self.init_window()
 
-    # INITIALIZATION
-
-    def init_version(self):
-        with open(resource_path(os.path.join(constants.CASTOR_ANALYTICS_RESOURCES_DIR, 'VERSION')), 'r') as f:
-            version = f.readline().strip()
-            return version
-        
-    def init_background_image(self):
-        image = BackgroundImage()
-        return image
-
-    def init_router(self):
-        router = Router()
-        router.add_page(StudyListPage(), '/studies')
-        router.add_page(StudyPage(), '/studies/:study_id')
-        router.add_page(StudySiteListPage(), '/studies/:study_id/sites')
-        router.add_page(SettingsPage(), '/settings')
-        router.navigate('/studies')
-        return router
-
-    def init_file_menu(self):
-        menu = self.menuBar().addMenu('File')
-        menu_settings_action = QAction('Settings', self)
-        menu_settings_action.triggered.connect(self.on_open_settings_page)
-        menu_exit_action = QAction('Exit', self)
-        menu_exit_action.triggered.connect(self.close)
-        menu.addAction(menu_settings_action)
-        menu.addAction(menu_exit_action)
-        return menu
-
-    def init_page_layout(self, app_label_text, background_image, router):
-        app_label = Label(app_label_text, type=Label.HEADING1)
-        app_label.setAlignment(Qt.AlignCenter)
-        page_widget = QWidget()
-        layout = QStackedLayout(page_widget)
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setStackingMode(QStackedLayout.StackAll)
-        layout.addWidget(background_image)
-        layout.addWidget(router)
-        page_layout = QVBoxLayout()
-        page_layout.addWidget(app_label)
-        page_layout.addWidget(page_widget)
-        return page_layout
-
-    def init_main_window(self, app_label_text, page_layout):
-        widget = QWidget()
-        widget.setLayout(page_layout)
-        self.setWindowTitle(app_label_text)
+    def init_window(self) -> None:
+        self.setWindowTitle(f'{constants.CASTORANALYTICS_WINDOW_TITLE} {version()}')
         self.setWindowIcon(QIcon(resource_path(os.path.join(
-            constants.CASTOR_ANALYTICS_RESOURCES_IMAGES_ICONS_DIR, constants.CASTOR_ANALYTICS_RESOURCES_ICON))))
-        self.setCentralWidget(widget)
-        self.resize(constants.CASTOR_ANALYTICS_WINDOW_W, constants.CASTOR_ANALYTICS_WINDOW_H)
-        self.center_window()
+            constants.CASTORANALYTICS_RESOURCES_IMAGES_ICONS_DIR, constants.CASTORANALYTICS_RESOURCES_ICON))))
+        if not self.load_geometry_and_state():
+            self.set_default_size_and_position()
+        self.init_menus()
+        self.init_status_bar()
+        self.setCentralWidget(self.main_panel())
+
+    def init_menus(self) -> None:
+        self.init_app_menu()
+        self.init_data_menu()
+        if is_macos():            
+            self.menuBar().setNativeMenuBar(False)
+
+    def init_app_menu(self) -> None:
+        app_menu_open_settings_action = QAction(constants.CASTORANALYTICS_APP_MENU_ITEM_SETTINGS, self)
+        app_menu_open_settings_action.triggered.connect(self.handle_open_settings)
+        app_menu_exit_action = QAction(constants.CASTORANALYTICS_APP_MENU_ITEM_EXIT, self)
+        app_menu_exit_action.triggered.connect(self.close)
+        app_menu = self.menuBar().addMenu(constants.CASTORANALYTICS_APP_MENU)
+        app_menu.addAction(app_menu_open_settings_action)
+        app_menu.addAction(app_menu_exit_action)
+
+    def init_data_menu(self) -> None:
+        data_menu = self.menuBar().addMenu(constants.CASTORANALYTICS_DATA_MENU)
+
+    def init_status_bar(self) -> None:
+        self.set_status(constants.CASTORANALYTICS_STATUS_READY)
+
+    # GETTERS
+
+    def settings(self) -> Settings:
+        if not self._settings:
+            self._settings = Settings()
+        return self._settings
+    
+    def main_panel(self) -> MainPanel:
+        if not self._main_panel:
+            self._main_panel = MainPanel(self)
+        return self._main_panel
+    
+    # SETTERS
+
+    def set_status(self, message: str) -> None:
+        self.statusBar().showMessage(message)
 
     # EVENT HANDLERS
 
-    def resizeEvent(self, event):
-        self._background_image.rescale()
-        return super().resizeEvent(event)
+    def handle_open_settings(self) -> None:
+        pass
 
-    def on_open_settings_page(self):
-        self._router.navigate('/settings')
-
+    def closeEvent(self, event: Any) -> None:
+        self.save_geometry_and_state()
+        return super().closeEvent(event)
+    
     # MISCELLANEOUS
 
-    def center_window(self):
+    def load_geometry_and_state(self) -> None:
+        geometry = self.settings().get(constants.CASTORANALYTICS_WINDOW_GEOMETRY_KEY)
+        state = self.settings().get(constants.CASTORANALYTICS_WINDOW_STATE_KEY)
+        if isinstance(geometry, QByteArray) and self.restoreGeometry(geometry):
+            if isinstance(state, QByteArray):
+                self.restoreState(state)
+            return True
+        return False
+
+    def save_geometry_and_state(self) -> None:
+        self.settings().set(
+            constants.CASTORANALYTICS_WINDOW_GEOMETRY_KEY, self.saveGeometry())
+        self.settings().set(
+            constants.CASTORANALYTICS_WINDOW_STATE_KEY, self.saveState())
+
+    def set_default_size_and_position(self) -> None:
+        self.resize(constants.CASTORANALYTICS_WINDOW_W, constants.CASTORANALYTICS_WINDOW_H)
+        self.center_window()
+
+    def center_window(self) -> None:
         screen = QGuiApplication.primaryScreen().geometry()
         x = (screen.width() - self.geometry().width()) / 2
         y = (screen.height() - self.geometry().height()) / 2
