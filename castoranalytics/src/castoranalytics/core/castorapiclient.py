@@ -9,8 +9,9 @@ API_BASE_URL = 'https://data.castoredc.com/api'
 
 
 class CastorApiClient:
-    def __init__(self, client_id, client_secret):
-        self._session = self.create_session(client_id, client_secret, TOKEN_URL)
+    def __init__(self, credentials):
+        self._session = self.create_session(
+            credentials.client_id(), credentials.client_secret(), TOKEN_URL)
         self._api_url = API_BASE_URL
 
     def create_session(self, client_id, client_secret, token_url):

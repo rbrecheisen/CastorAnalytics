@@ -1,10 +1,13 @@
 from castoranalytics.core.loaders.loader import Loader
 from castoranalytics.core.castorapiclient import CastorApiClient
-from castoranalytics.core.credentials import Credentials
 
 
 class StudyLoader(Loader):
+    def __init__(self, credentials):
+        super(StudyLoader, self).__init__(credentials)
+
     def load(self):
-        credentials = Credentials()
-        with CastorApiClient(credentials.client_id(), credentials.client_secret()) as client:
-            pass
+        # Notify listeners of progress
+        with CastorApiClient(self.credentials()) as client:
+            studies = client.get_studies()
+            return studies
