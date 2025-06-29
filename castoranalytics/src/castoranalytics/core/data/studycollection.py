@@ -1,4 +1,7 @@
-class StudyCollection:
+from castoranalytics.core.data.collection import Collection
+
+
+class StudyCollection(Collection):
     def __init__(self, studies):
         self._studies_by_id = self.load_by_id(studies)
         self._studies_by_name = self.load_by_name(studies)
@@ -27,3 +30,6 @@ class StudyCollection:
         if name in self._studies_by_name.keys():
             return self._studies_by_name[name]
         return None
+    
+    def size(self):
+        return len(self.all())

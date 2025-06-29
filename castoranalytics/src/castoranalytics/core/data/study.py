@@ -28,3 +28,6 @@ class Study:
     
     def set_optiongroups(self, optiongroups):
         self._optiongroups = optiongroups
+
+    def __str__(self):
+        return f'Study(id={self.id()}, name={self.name()})'

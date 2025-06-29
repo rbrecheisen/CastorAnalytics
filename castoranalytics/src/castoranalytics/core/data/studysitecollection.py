@@ -1,8 +1,11 @@
-class StudySiteCollection:
+from castoranalytics.core.data.collection import Collection
+
+
+class StudySiteCollection(Collection):
     def __init__(self, study_sites):
-        self._study_sites_by_id = {}
-        self._study_sites_by_name = {}
-        self._study_sites_by_abbreviation = {}
+        self._study_sites_by_id = self.load_by_id(study_sites)
+        self._study_sites_by_name = self.load_by_name(study_sites)
+        self._study_sites_by_abbreviation = self.load_by_abbreviation(study_sites)
 
     def load_by_id(self, study_sites):
         study_sites_by_id = {}
@@ -39,3 +42,6 @@ class StudySiteCollection:
         if abbreviation in self._study_sites_by_abbreviation.keys():
             return self._study_sites_by_abbreviation
         return None
+    
+    def size(self):
+        return len(self.all())

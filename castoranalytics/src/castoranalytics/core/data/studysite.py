@@ -28,3 +28,6 @@ class StudySite:
     
     def set_abbreviation(self, abbreviation):
         self._abbrevation = abbreviation
+
+    def __str__(self):
+        return f'StudySite(id={self.id()}, name={self.name()}, country_id={self.country_id()}, abbreviation={self.abbreviation()})'

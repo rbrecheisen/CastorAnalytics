@@ -1,4 +1,7 @@
-class CountryCollection:
+from castoranalytics.core.data.collection import Collection
+
+
+class CountryCollection(Collection):
     def __init__(self, countries):
         self._countries_by_id = self.load_by_id(countries)
         self._countries_by_name = self.load_by_name(countries)
@@ -51,3 +54,6 @@ class CountryCollection:
         if three_digit_code in self._countries_by_three_digit_code.keys():
             return self._countries_by_three_digit_code[three_digit_code]
         return None
+    
+    def size(self):
+        return len(self.all())

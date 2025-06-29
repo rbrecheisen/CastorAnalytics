@@ -28,3 +28,6 @@ class Country:
     
     def set_three_digit_code(self, three_digit_code):
         self._three_digit_code = three_digit_code
+
+    def __str__(self):
+        return f'Country(id={self.id()}, name={self.name()}, cca2={self.two_digit_code()}, cca3={self.three_digit_code()})'
