@@ -2,8 +2,8 @@ class Country:
     def __init__(self):
         self._id = None
         self._name = None
-        self._code2 = None
-        self._code3 = None
+        self._two_digit_code = None
+        self._three_digit_code = None
 
     def id(self):
         return self._id
@@ -17,14 +17,14 @@ class Country:
     def set_name(self, name):
         self._name = name
 
-    def code2(self):
-        return self._code2
+    def two_digit_code(self):
+        return self._two_digit_code
     
-    def set_code2(self, code2):
-        self._code2 = code2
+    def set_two_digit_code(self, two_digit_code):
+        self._two_digit_code = two_digit_code
 
-    def code3(self):
-        return self._code3
+    def three_digit_code(self):
+        return self._three_digit_code
     
-    def set_code3(self, code3):
-        self._code3 = code3
+    def set_three_digit_code(self, three_digit_code):
+        self._three_digit_code = three_digit_code

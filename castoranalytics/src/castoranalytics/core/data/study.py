@@ -4,7 +4,6 @@ class Study:
         self._name = None
         self._fields = None
         self._optiongroups = None
-        self._sites = None
 
     def id(self):
         return self._id
@@ -29,9 +28,3 @@ class Study:
     
     def set_optiongroups(self, optiongroups):
         self._optiongroups = optiongroups
-
-    def sites(self):
-        return self._sites
-    
-    def set_sites(self, sites):
-        self._sites = sites
