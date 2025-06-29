@@ -1,9 +1,9 @@
 class CountryCollection:
     def __init__(self, countries):
-        self._countries_by_id = {}
-        self._countries_by_name = {}
-        self._countries_by_two_digit_code = {}
-        self._countries_by_three_digit_code = {}
+        self._countries_by_id = self.load_by_id(countries)
+        self._countries_by_name = self.load_by_name(countries)
+        self._countries_by_two_digit_code = self.load_by_two_digit_code(countries)
+        self._countries_by_three_digit_code = self.load_by_three_digit_code(countries)
 
     def load_by_id(self, countries):
         countries_by_id = {}
