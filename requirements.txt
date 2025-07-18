@@ -2,8 +2,9 @@
 tomli
 tomli-w
 pytest
+briefcase
 
 # Application
-pyside6>=6.9
+PySide6-Essentials>=6.9
 oauthlib>=3.2
 requests-oauthlib>=2.0
