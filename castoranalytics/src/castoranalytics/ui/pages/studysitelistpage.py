@@ -7,6 +7,7 @@ from PySide6.QtWidgets import (
     QSizePolicy,
     QPushButton,
     QFileDialog,
+    QMessageBox,
 )
 from PySide6.QtCore import Qt
 
@@ -125,6 +126,7 @@ class StudySiteListPage(BasePage):
                     data['completion_percentage'].append(study_site.get_completion_percentage())
                 df = pd.DataFrame(data)
                 df.to_excel(file_path, index=False, engine="openpyxl")
+                QMessageBox.information(self, 'Site data successfully saved')
 
     def on_study_site_selected(self, item):
         # self.navigate(f'/studies/{item.data(Qt.UserRole).get_id()}')
