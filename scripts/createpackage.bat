@@ -17,10 +17,11 @@ rmdir /s /q %OUTPUT_DIR%
 mkdir %OUTPUT_DIR% 2>nul
 
 @REM Source code
-robocopy castoranalytics %OUTPUT_DIR% /E /XD __pycache__ *.dist-info .pytest_cache build dist logs tests /XF .gitignore CHANGELOG
+robocopy castoranalytics %OUTPUT_DIR% /E /XD __pycache__ *.dist-info .pytest_cache build dist logs tests experiments /XF .gitignore CHANGELOG
 
 @REM Scripts
 copy requirements.txt %OUTPUT_DIR%
+copy README.txt %OUTPUT_DIR%
 copy scripts\packagefiles\clean-python-environment.bat %OUTPUT_DIR%
 copy scripts\packagefiles\clean-python-environment.ps1 %OUTPUT_DIR%
 copy scripts\packagefiles\run-castoranalytics.bat %OUTPUT_DIR%

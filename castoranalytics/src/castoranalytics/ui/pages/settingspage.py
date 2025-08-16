@@ -84,7 +84,7 @@ class SettingsPage(BasePage):
     def init_page_layout(self):
         self.get_layout().addWidget(self._back_button)
         self.get_layout().addLayout(self._api_settings_form)
-        self.get_layout().addLayout(self._license_key_form)
+        # self.get_layout().addLayout(self._license_key_form)
         self.get_layout().addItem(QSpacerItem(0, 20, QSizePolicy.Minimum, QSizePolicy.Expanding))
         self.get_layout().addWidget(self._save_button)
 
