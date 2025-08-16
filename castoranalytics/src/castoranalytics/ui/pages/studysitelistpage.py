@@ -1,4 +1,4 @@
-import json
+import pandas as pd
 
 from PySide6.QtWidgets import (
     QTableWidget,
@@ -6,6 +6,7 @@ from PySide6.QtWidgets import (
     QHeaderView,
     QSizePolicy,
     QPushButton,
+    QFileDialog,
 )
 from PySide6.QtCore import Qt
 
@@ -22,7 +23,9 @@ class StudySiteListPage(BasePage):
         super(StudySiteListPage, self).__init__(name='Study sites')
         self._study_id = None
         self._study = None
+        self._study_sites = None
         self._back_button = self.init_back_button()
+        self._export_to_excel_button = self.init_export_to_excel_button()
         self._study_site_list_label = self.init_study_site_list_label()
         self._table_widget = self.init_table_widget()
         self.init_page_layout()
@@ -32,6 +35,11 @@ class StudySiteListPage(BasePage):
     def init_back_button(self):
         button = QPushButton('Back', self)
         button.clicked.connect(self.on_back)
+        return button
+    
+    def init_export_to_excel_button(self):
+        button = QPushButton('Export site data to Excel', self)
+        button.clicked.connect(self.on_export_to_excel)
         return button
 
     def init_study_site_list_label(self):
@@ -48,6 +56,7 @@ class StudySiteListPage(BasePage):
 
     def init_page_layout(self):
         self.get_layout().addWidget(self._back_button)
+        self.get_layout().addWidget(self._export_to_excel_button)
         self.get_layout().addWidget(self._study_site_list_label)
         self.get_layout().addWidget(self._table_widget)
 
@@ -83,12 +92,12 @@ class StudySiteListPage(BasePage):
         self._table_widget.setAlternatingRowColors(True)
         self._table_widget.horizontalHeader().setSectionResizeMode(1, QHeaderView.Stretch)
         self._table_widget.horizontalHeader().setDefaultAlignment(Qt.AlignLeft | Qt.AlignVCenter)
-        for row, study_site in enumerate(study_sites):
-            self._table_widget.setItem(row, 0, QTableWidgetItem(study_site.get_abbreviation()))
-            self._table_widget.setItem(row, 1, QTableWidgetItem(study_site.get_name()))
-            self._table_widget.setItem(row, 2, QTableWidgetItem(study_site.get_country_code()))
-            self._table_widget.setItem(row, 3, NumericTableWidgetItem(study_site.get_nr_records()))
-            self._table_widget.setItem(row, 4, NumericTableWidgetItem(study_site.get_completion_percentage()))    
+        for idx, study_site in enumerate(study_sites):
+            self._table_widget.setItem(idx, 0, QTableWidgetItem(study_site.get_abbreviation()))
+            self._table_widget.setItem(idx, 1, QTableWidgetItem(study_site.get_name()))
+            self._table_widget.setItem(idx, 2, QTableWidgetItem(study_site.get_country_code()))
+            self._table_widget.setItem(idx, 3, NumericTableWidgetItem(study_site.get_nr_records()))
+            self._table_widget.setItem(idx, 4, NumericTableWidgetItem(study_site.get_completion_percentage()))    
         self._table_widget.setSortingEnabled(True)
         self._table_widget.viewport().update()
     
@@ -96,6 +105,26 @@ class StudySiteListPage(BasePage):
 
     def on_back(self):
         self.navigate(f'/studies/{self._study_id}')
+
+    def on_export_to_excel(self):
+        if self._study_sites:
+            file_path, _ = QFileDialog.getSaveFileName(self, 'Save file as...', '.')
+            if file_path:
+                data = {
+                    'name': [],
+                    'abbreviation': [],
+                    'country_code': [],
+                    'nr_records': [],
+                    'completion_percentage': [],
+                }
+                for idx, study_site in enumerate(self._study_sites):
+                    data['name'].append(study_site.get_name())
+                    data['abbreviation'].append(study_site.get_abbreviation())
+                    data['country_code'].append(study_site.get_country_code())
+                    data['nr_records'].append(study_site.get_nr_records())
+                    data['completion_percentage'].append(study_site.get_completion_percentage())
+                df = pd.DataFrame(data)
+                df.to_excel(file_path, index=False, engine="openpyxl")
 
     def on_study_site_selected(self, item):
         # self.navigate(f'/studies/{item.data(Qt.UserRole).get_id()}')
@@ -110,5 +139,6 @@ class StudySiteListPage(BasePage):
             self.load_data('get_study_sites', self._study_id)
     
     def on_data_ready(self, study_sites, error):
+        self._study_sites = study_sites
         self.update_study_site_list_label(error)
-        self.update_table_widget(study_sites)
+        self.update_table_widget(self._study_sites)

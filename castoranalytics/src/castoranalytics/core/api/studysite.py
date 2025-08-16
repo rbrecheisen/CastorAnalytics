@@ -24,8 +24,8 @@ class StudySite:
         return int(round(self._study_site_data['completion_percentage'], 0))
     
     def __str__(self):
-        return 'StudySite(id={}, abbreviation={}, country_id={}, country_code={}, nr_records={}, completion_percentage={})'.format(
-            self.get_id(),
+        return 'StudySite(name={}, abbreviation={}, country_id={}, country_code={}, nr_records={}, completion_percentage={})'.format(
+            self.get_name(),
             self.get_abbreviation(),
             self.get_country_id(),
             self.get_country_code(), 

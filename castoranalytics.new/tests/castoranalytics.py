@@ -9,7 +9,6 @@ import pytest
 def run_tests():
     project_path = Path(__file__).parent.parent
     os.chdir(project_path)
-    print(project_path)
 
     # Determine any args to pass to pytest. If there aren't any,
     # default to running the whole test suite.

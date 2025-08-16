@@ -8,3 +8,5 @@ briefcase
 PySide6-Essentials>=6.9
 oauthlib>=3.2
 requests-oauthlib>=2.0
+pandas
+openpyxl

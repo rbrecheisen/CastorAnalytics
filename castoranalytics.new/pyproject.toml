@@ -1,9 +1,8 @@
 [tool.briefcase]
-project_name = "Castor Analytics"
+project_name = "CastorAnalytics"
 bundle = "com.rbeesoft"
-icon = "src/castoranalytics/resources/images/icons/castoranalytics"
-version = "1.2"
-url = "https://rbeesoft.nl/castoranalytics"
+version = "1.0.0"
+url = "https://rbeesoft.com/castoranalytics"
 author = "Ralph Brecheisen"
 author_email = "ralph.brecheisen@gmail.com"
 
@@ -12,7 +11,7 @@ file = "LICENSE"
 
 [tool.briefcase.app.castoranalytics]
 formal_name = "CastorAnalytics"
-description = "Desktop application to view summary statistics and advanced visualizations of your Castor EDC studies"
+description = "My first application"
 long_description = "More details about the app should go here.\n"
 sources = [
     "src/castoranalytics",
@@ -21,16 +20,12 @@ test_sources = [
     "tests",
 ]
 requires = [
-    "pyside6==6.9.1",
-    "sqlalchemy==2.0.41",
-    "oauthlib==3.2.2",
-    "requests-oauthlib==2.0.0",
+    "pyside6>=6.9",
+    "oauthlib>=3.2",
+    "requests-oauthlib>=2.0",
 ]
 test_requires = [
     "pytest",
-]
-resources = [
-    "src/castoranalytics/resources",
 ]
 
 [tool.briefcase.app.castoranalytics.macOS]
