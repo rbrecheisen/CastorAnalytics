@@ -109,8 +109,11 @@ class StudySiteListPage(BasePage):
 
     def on_export_to_excel(self):
         if self._study_sites:
-            file_path, _ = QFileDialog.getSaveFileName(self, 'Save file as...', '.')
+            file_path, _ = QFileDialog.getSaveFileName(self, 'Save file as...', '.', filter='Excel (.xlsx)')
             if file_path:
+                if not file_path.endswith('.xlsx'):
+                    QMessageBox.warning(self, 'Error', 'File must have extension .xlsx')
+                    return
                 data = {
                     'name': [],
                     'abbreviation': [],
@@ -126,7 +129,7 @@ class StudySiteListPage(BasePage):
                     data['completion_percentage'].append(study_site.get_completion_percentage())
                 df = pd.DataFrame(data)
                 df.to_excel(file_path, index=False, engine="openpyxl")
-                QMessageBox.information(self, 'Site data successfully saved')
+                QMessageBox.information(self, 'Info', 'Site data successfully saved')
 
     def on_study_site_selected(self, item):
         # self.navigate(f'/studies/{item.data(Qt.UserRole).get_id()}')

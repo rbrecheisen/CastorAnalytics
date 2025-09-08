@@ -38,6 +38,7 @@ class MainWindow(QMainWindow):
         self._file_menu = self.init_file_menu()
         self._page_layout = self.init_page_layout(self._app_label_text, self._background_image, self._router)
         self.init_main_window(self._app_label_text, self._page_layout)
+        self.show()
 
     # INITIALIZATION
 
@@ -56,7 +57,7 @@ class MainWindow(QMainWindow):
         router.add_page(StudyPage(), '/studies/:study_id')
         router.add_page(StudySiteListPage(), '/studies/:study_id/sites')
         router.add_page(SettingsPage(), '/settings')
-        router.navigate('/studies')
+        # router.navigate('/studies')
         return router
 
     def init_file_menu(self):
@@ -97,6 +98,7 @@ class MainWindow(QMainWindow):
 
     def resizeEvent(self, event):
         self._background_image.rescale()
+        self._router.navigate('/studies')
         return super().resizeEvent(event)
 
     def on_open_settings_page(self):

@@ -1,12 +1,12 @@
 [project]
 name = "castoranalytics"
-version = "2.0.0"
+version = "2.0.1"
 description = ""
 authors = [
     {name = "Ralph Brecheisen", email = "r.brecheisen@maastrichtuniversity.nl"}
 ]
 readme = "README.md"
-requires-python = ">=3.11,<3.12"
+requires-python = ">=3.11,<3.14"
 dependencies = [
     "pyside6-essentials>=6.9",
     "oauthlib>=3.2",
